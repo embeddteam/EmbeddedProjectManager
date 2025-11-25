@@ -1,8 +1,8 @@
 {
-  "name": "helloworld",
-  "displayName": "HelloWorld",
+  "name": "embedded_project_manager",
+  "displayName": "Embedded Project Manager",
   "icon": "images/icon.png",
-  "description": "Test",
+  "description": "Extension for managing embedded projects",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.106.1"
@@ -15,61 +15,41 @@
   "contributes": {
     "commands": [
       {
-        "command": "helloworld.helloWorld",
-        "title": "Hello World"
+        "command": "embedded_project_manager.helloWorld",
+        "title": "Embedded Project Manager: Hello World"
       },
       {
-        "command": "helloworld.generateFile",
-        "title": "Generate file"
+        "command": "embedded_project_manager.generateFile",
+        "title": "Embedded Project Manager: Generate file"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "myExtensionSidebar",
-          "title": "My Extension",
+          "id": "epmSidebar",
+          "title": "Embedded Project Manager",
           "icon": "$(chip)"
         }
       ]
     },
     "views": {
-      "myExtensionSidebar": [
+      "epmSidebar": [
         {
-          "id": "myTreeView",
-          "name": "My Tree View",
+          "id": "epmTreeView",
+          "name": "Embedded Project Manager Tree View",
           "type": "tree",
           "icon": "$(chip)"
         }
       ]
     },
     "configuration": {
-      "title": "My Extension",
+      "title": "Embedded Project Manager",
       "properties": {
-        "myExtension.enableFeature": {
-          "type": "boolean",
-          "default": true,
-          "description": "Включить/выключить основную функцию расширения",
-          "scope": "window"
-        },
-        "myExtension.timeout": {
-          "type": "number",
-          "default": 5000,
-          "description": "Таймаут в миллисекундах",
-          "minimum": 100,
-          "maximum": 60000
-        },
-        "myExtension.logLevel": {
+        "EPMVSCodeExtension.CLT.path": {
           "type": "string",
-          "enum": [
-            "none",
-            "error",
-            "warn",
-            "info",
-            "debug"
-          ],
-          "default": "info",
-          "description": "Уровень логирования",
-          "scope": "machine"
+          "default": "",
+          "description": "Путь к набору инструментов командной строки",
+          "scope": "window"
         }
       }
     }

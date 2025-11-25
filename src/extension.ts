@@ -99,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const treeDataProvider = new MyTreeDataProvider(context);
 
 	// Регистрируем TreeView
-	const treeView = vscode.window.createTreeView('myTreeView', {
+	const treeView = vscode.window.createTreeView('epmTreeView', {
 		treeDataProvider,
 		showCollapseAll: true
 	});
