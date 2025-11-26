@@ -125,14 +125,12 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeNode> {
 		if (!element) {
 			// Корневые элементы
 			return Promise.resolve([
-				new MyTreeNode('Root 1', vscode.TreeItemCollapsibleState.Collapsed, this.context),
-				new MyTreeNode('Root 2', vscode.TreeItemCollapsibleState.None, this.context)
+				new MyTreeNode('Init current project', vscode.TreeItemCollapsibleState.None, this.context),
 			]);
 		} else {
 			// Дочерние элементы (если collapsible)
 			return Promise.resolve([
-				new MyTreeNode('Child 1', vscode.TreeItemCollapsibleState.None, this.context),
-				new MyTreeNode('Child 2', vscode.TreeItemCollapsibleState.None, this.context)
+
 			]);
 		}
 	}
@@ -146,7 +144,7 @@ class MyTreeNode extends vscode.TreeItem {
 	) {
 		super(label, collapsibleState);
 		this.tooltip = `${this.label}`;
-		this.description = 'example';
+		// this.description = 'example';
 		this.command = {
 			command: 'helloworld.helloWorld',
 			title: '',
