@@ -42,14 +42,14 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('helloworld.helloWorld', () => {
+	const disposable = vscode.commands.registerCommand('embeddedprojectmanager.helloWorld', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from HelloWorld!');
 	});
 
 
-	const generate_file = vscode.commands.registerCommand('helloworld.generateFile', () => {
+	const generate_file = vscode.commands.registerCommand('embeddedprojectmanager.generateFile', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		// Данные, которые нужно записать в JSON
@@ -76,19 +76,40 @@ export function activate(context: vscode.ExtensionContext) {
 			// Убедимся, что папка .vscode существует
 			if (!fs.existsSync(path.dirname(filePath))) {
 				fs.mkdirSync(path.dirname(filePath), { recursive: true });
+				// Записываем файл
+				writeJsonFileSync(filePath, data);
+				vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
 			}
-			// Записываем файл
-			writeJsonFileSync(filePath, data);
-			vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
+			else {
+				console.log(`Папка .vscode уже существует`);
+
+				const confirm = 'Да';
+				const cancel = 'Нет';
+
+				const result = vscode.window.showWarningMessage(
+					'Файлы уже существуют. Перезаписать?',
+					{ modal: true },
+					confirm,
+					cancel
+				).then((result) => {
+					console.log(result);
+					if (result === confirm) {
+						// Записываем файл
+						writeJsonFileSync(filePath, data);
+						vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
+					}
+					else if (result === cancel) {
+						return;
+					}
+				});
+
+			}
+
 		} catch (err) {
 			vscode.window.showErrorMessage(`Ошибка записи файла`);
 			console.error(err);
 		}
 
-		// Использование (синхронно)
-		writeJsonFileSync(filePath, data);
-
-		vscode.window.showInformationMessage('File was generated');
 	});
 
 	context.subscriptions.push(disposable);
@@ -125,7 +146,7 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeNode> {
 		if (!element) {
 			// Корневые элементы
 			return Promise.resolve([
-				new MyTreeNode('Init current project', vscode.TreeItemCollapsibleState.None, this.context),
+				new MyTreeNode('Init current project', vscode.TreeItemCollapsibleState.None, this.context, true),
 			]);
 		} else {
 			// Дочерние элементы (если collapsible)
@@ -138,33 +159,36 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeNode> {
 
 class MyTreeNode extends vscode.TreeItem {
 	constructor(
-		public readonly label: string,
+		public readonly label_text: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		context: vscode.ExtensionContext
+		context: vscode.ExtensionContext,
+		isEnabled: boolean
 	) {
-		super(label, collapsibleState);
+		let descriptionText: string = '';
+
+		if (!isEnabled) {
+			descriptionText = label_text;
+			label_text = '';
+		}
+
+		super(label_text, collapsibleState);
+
+		this.description = descriptionText;
+
 		this.tooltip = `${this.label}`;
-		// this.description = 'example';
-		this.command = {
-			command: 'helloworld.helloWorld',
-			title: '',
-			arguments: [this.label]
-		};
 
-		// Пример: разные иконки для корня и детей
-		const iconPath = label.startsWith('Root')
-			? 'images/item.svg'
-			: 'images/item.svg';
-
-		// this.iconPath = 'images/item.svg';
-
-		// Иконки из файла
-		// this.iconPath = {
-		// 	light: vscode.Uri.joinPath(context.extensionUri, 'images', 'item.svg'),
-		// 	dark: vscode.Uri.joinPath(context.extensionUri, 'images', 'item.svg')
-		// };
+		if (isEnabled) {
+			this.command = {
+				command: 'embeddedprojectmanager.generateFile',
+				title: '',
+				arguments: [this.label]
+			};
+		}
+		else {
+			this.command = undefined;
+		}
 
 		// Иконки из коллекции VS Code
-		this.iconPath = new vscode.ThemeIcon('file');
+		this.iconPath = new vscode.ThemeIcon('symbol-property');
 	}
 }
