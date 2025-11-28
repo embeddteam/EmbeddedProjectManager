@@ -74,8 +74,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 		try {
 			// Убедимся, что папка .vscode существует
-			if (!fs.existsSync(path.dirname(filePath))) {
-				fs.mkdirSync(path.dirname(filePath), { recursive: true });
+			if (!fs.existsSync(filePath)) {
+				if (!fs.existsSync(path.dirname(filePath))) {
+					fs.mkdirSync(path.dirname(filePath), { recursive: true });
+				}
+
 				// Записываем файл
 				writeJsonFileSync(filePath, data);
 				vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
