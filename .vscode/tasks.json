@@ -35,6 +35,23 @@
 				"npm: watch-tests"
 			],
 			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Установить зависимости",
+			"command": "npm",
+			"args": [
+				"install"
+			],
+			"problemMatcher": [],
+			"detail": "Установка зависимостей"
+		},
+		{
+			"type": "npm",
+			"label": "Создать пакет расширения",
+			"script": "vsix_package",
+			"problemMatcher": [],
+			"detail": "Создать пакет расширения"
 		}
 	]
 }
