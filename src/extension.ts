@@ -12,24 +12,40 @@ import * as path from 'path';
 function writeJsonFileSync(filePath: string, data: any): void {
 	try {
 		const jsonContent = JSON.stringify(data, null, 2); // с отступами для читаемости
-		fs.writeFileSync(filePath, jsonContent, 'utf8');
-		console.log(`✅ Файл успешно записан: ${filePath}`);
+		if (!fs.existsSync(filePath)) {
+			if (!fs.existsSync(path.dirname(filePath))) {
+				fs.mkdirSync(path.dirname(filePath), { recursive: true });
+			}
+
+			fs.writeFileSync(filePath, jsonContent, 'utf8');
+			vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
+			console.log(`✅ Файл успешно записан: ${filePath}`);
+		}
+		else {
+			const confirm = 'Да';
+			const cancel = 'Нет';
+
+			vscode.window.showWarningMessage(
+				`Файл ${path.basename(filePath)}  уже существуют. Перезаписать?`,
+				{ modal: true },
+				confirm,
+				cancel
+			).then((result) => {
+				console.log(result);
+				if (result === confirm) {
+					fs.writeFileSync(filePath, jsonContent, 'utf8');
+					vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
+				}
+				else if (result === cancel) {
+					return;
+				}
+			});
+		}
+
 	} catch (error) {
 		console.error('❌ Ошибка записи файла:', error);
 	}
 }
-
-// Асинхронная версия (рекомендуется для production)
-async function writeJsonFileAsync(filePath: string, data: any): Promise<void> {
-	try {
-		const jsonContent = JSON.stringify(data, null, 2);
-		await fs.promises.writeFile(filePath, jsonContent, 'utf8');
-		console.log(`✅ Файл успешно записан (async): ${filePath}`);
-	} catch (error) {
-		console.error('❌ Ошибка записи файла:', error);
-	}
-}
-
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -53,9 +69,170 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		// Данные, которые нужно записать в JSON
-		const data = {
-			param1: 'Test',
-			param2: 32,
+		const tasks_data = {
+			version: '2.0.0',
+			windows: {
+				options: {
+					shell: {
+						executable: "cmd.exe",
+						args: ["/d", "/c"]
+					}
+				}
+			},
+
+			tasks: [
+				{
+					type: "shell",
+					label: "Build project",
+					command: "cmake",
+					args: ["--build", "${command:cmake.buildDirectory}", "--target", "${command:cmake.buildTargetName}"],
+					options: {
+						cwd: "${workspaceFolder}"
+					},
+					problemMatcher: ["$gcc"],
+					group: {
+						kind: "build",
+						isDefault: true
+					},
+					icon: {
+						id: "tools",
+						color: "terminal.ansiGreen"
+					}
+				},
+				{
+					type: "shell",
+					label: "Clean project",
+					command: "cmake",
+					args: ["--build", "${command:cmake.buildDirectory}", "--target", "clean"],
+					options: {
+						cwd: "${workspaceFolder}"
+					},
+					problemMatcher: [],
+					icon: {
+						id: "trash",
+						color: "terminal.ansiRed"
+					}
+				},
+				{
+					type: "shell",
+					label: "CubeProg: Flash project (SWD)",
+					command: "STM32_Programmer_CLI",
+					args: [
+						"--connect",
+						"port=swd",
+						"--download",
+						"${command:cmake.launchTargetPath}",
+						// Let CMake extension decide executable: "${command:cmake.launchTargetPath}",
+						"-hardRst", // Hardware reset - if rst pin is connected
+						"-rst", // Software reset (backup)
+						"--start" // Start execution
+					],
+					options: {
+						"cwd": "${workspaceFolder}"
+					},
+					problemMatcher: [],
+					icon: {
+						id: "flame",
+						color: "terminal.ansiRed"
+					}
+				},
+				{
+					label: "Build + Flash",
+					dependsOrder: "sequence",
+					dependsOn: [
+						"CMake: clean rebuild",
+						"CubeProg: Flash project (SWD)",
+					],
+					icon: {
+						id: "flame",
+						color: "terminal.ansiRed"
+					}
+				},
+				{
+					type: "cmake",
+					label: "CMake: clean rebuild",
+					command: "cleanRebuild",
+					targets: [
+						"all"
+					],
+					preset: "${command:cmake.activeBuildPresetName}",
+					group: "build",
+					problemMatcher: [],
+					detail: "CMake template clean rebuild task",
+					icon: {
+						id: "sync",
+						color: "terminal.ansiGreen"
+					}
+				},
+				{
+					type: "shell",
+					label: "CubeProg: List all available communication interfaces",
+					command: "STM32_Programmer_CLI",
+					args: ["--list"],
+					options: {
+						cwd: "${workspaceFolder}"
+					},
+					problemMatcher: []
+				},
+				{
+					type: "shell",
+					label: "Открыть STM32CubeMX для проекта",
+					command: "start",
+					args: [
+						"RGB_WiFi_MatrixLamp_CPP.ioc"
+					],
+					problemMatcher: [],
+					detail: "Открыть STM32CubeMX для проекта",
+					icon: {
+						id: "chip",
+						color: "terminal.ansiBlue"
+					}
+				},
+				{
+					type: "shell",
+					label: "Запустить автоформатирование С/С++",
+					command: "python",
+					args: [
+						"run-clang-format.py",
+					],
+					problemMatcher: [],
+					detail: "Запуск clang-format для настроенных директорий",
+					icon: {
+						id: "file-code",
+						color: "terminal.ansiBlue"
+					}
+				},
+				{
+					type: "shell",
+					label: "C/C++: Run cppcheck",
+					command: "cppcheck",
+					args: [
+						"Core",
+						"Components",
+						"--enable=warning,performance,portability,style",
+						"--check-level=exhaustive",
+						"--inconclusive",
+						"--quiet",
+						"--template=gcc",
+						"--suppress=missingIncludeSystem",
+						"--suppress=cstyleCast",
+						"--suppress=constParameterPointer",
+						"--suppress=variableScope"
+
+					],
+					problemMatcher: ["$gcc"],
+					group: "test",
+					detail: "C/C++: Run cppcheck",
+					icon: {
+						id: "check",
+						color: "terminal.ansiGreen"
+					}
+				}
+			],
+
+			presentation: {
+				clear: true
+			}
 		};
 
 		// Проверяем, что есть открытая рабочая область
@@ -69,44 +246,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 		// Путь к файлу
-		const filePath = path.join(workspaceRoot, '.vscode', 'test.json');
+		const filePath = path.join(workspaceRoot, '.vscode', 'tasks.json');
 
 
 		try {
-			// Убедимся, что папка .vscode существует
-			if (!fs.existsSync(filePath)) {
-				if (!fs.existsSync(path.dirname(filePath))) {
-					fs.mkdirSync(path.dirname(filePath), { recursive: true });
-				}
-
-				// Записываем файл
-				writeJsonFileSync(filePath, data);
-				vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
-			}
-			else {
-				console.log(`Папка .vscode уже существует`);
-
-				const confirm = 'Да';
-				const cancel = 'Нет';
-
-				const result = vscode.window.showWarningMessage(
-					'Файлы уже существуют. Перезаписать?',
-					{ modal: true },
-					confirm,
-					cancel
-				).then((result) => {
-					console.log(result);
-					if (result === confirm) {
-						// Записываем файл
-						writeJsonFileSync(filePath, data);
-						vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
-					}
-					else if (result === cancel) {
-						return;
-					}
-				});
-
-			}
+			writeJsonFileSync(filePath, tasks_data);
 
 		} catch (err) {
 			vscode.window.showErrorMessage(`Ошибка записи файла`);
