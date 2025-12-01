@@ -55,21 +55,12 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "helloworld" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('embeddedprojectmanager.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from HelloWorld!');
-	});
-
 
 	const generate_file = vscode.commands.registerCommand('embeddedprojectmanager.generateFile', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		// Данные, которые нужно записать в JSON
-		const tasks_data = {
+		const base_tasks_data = {
 			version: '2.0.0',
 			windows: {
 				options: {
@@ -79,7 +70,6 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 				}
 			},
-
 			tasks: [
 				{
 					type: "shell",
@@ -173,67 +163,46 @@ export function activate(context: vscode.ExtensionContext) {
 						cwd: "${workspaceFolder}"
 					},
 					problemMatcher: []
-				},
-				{
-					type: "shell",
-					label: "Открыть STM32CubeMX для проекта",
-					command: "start",
-					args: [
-						"RGB_WiFi_MatrixLamp_CPP.ioc"
-					],
-					problemMatcher: [],
-					detail: "Открыть STM32CubeMX для проекта",
-					icon: {
-						id: "chip",
-						color: "terminal.ansiBlue"
-					}
-				},
-				{
-					type: "shell",
-					label: "Запустить автоформатирование С/С++",
-					command: "python",
-					args: [
-						"run-clang-format.py",
-					],
-					problemMatcher: [],
-					detail: "Запуск clang-format для настроенных директорий",
-					icon: {
-						id: "file-code",
-						color: "terminal.ansiBlue"
-					}
-				},
-				{
-					type: "shell",
-					label: "C/C++: Run cppcheck",
-					command: "cppcheck",
-					args: [
-						"Core",
-						"Components",
-						"--enable=warning,performance,portability,style",
-						"--check-level=exhaustive",
-						"--inconclusive",
-						"--quiet",
-						"--template=gcc",
-						"--suppress=missingIncludeSystem",
-						"--suppress=cstyleCast",
-						"--suppress=constParameterPointer",
-						"--suppress=variableScope"
-
-					],
-					problemMatcher: ["$gcc"],
-					group: "test",
-					detail: "C/C++: Run cppcheck",
-					icon: {
-						id: "check",
-						color: "terminal.ansiGreen"
-					}
 				}
 			],
-
 			presentation: {
 				clear: true
 			}
 		};
+
+		const cube_mx_task = {
+			type: "shell",
+			label: "Открыть STM32CubeMX для проекта",
+			command: "start",
+			args: [
+				"RGB_WiFi_MatrixLamp_CPP.ioc"
+			],
+			problemMatcher: [],
+			detail: "Открыть STM32CubeMX для проекта",
+			icon: {
+				id: "chip",
+				color: "terminal.ansiBlue"
+			}
+		};
+
+
+		let tasks_data = {
+			...base_tasks_data,
+			tasks: [
+				...base_tasks_data.tasks
+			]
+		};
+
+
+		// tasks_data = {
+		// 	...base_tasks_data,
+		// 	tasks: [
+		// 		...base_tasks_data.tasks,
+		// 		...cube_mx_task
+		// 	]
+		// };
+
+
 
 		// Проверяем, что есть открытая рабочая область
 		if (!vscode.workspace.workspaceFolders) {
@@ -259,7 +228,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	});
 
-	context.subscriptions.push(disposable);
 	context.subscriptions.push(generate_file);
 
 
@@ -281,19 +249,19 @@ export function deactivate() { }
 
 
 // Пример простого TreeDataProvider
-class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeNode> {
+class MyTreeDataProvider implements vscode.TreeDataProvider<ActionTreeNode> {
 
 	constructor(private context: vscode.ExtensionContext) { }
 
-	getTreeItem(element: MyTreeNode): vscode.TreeItem {
+	getTreeItem(element: ActionTreeNode): vscode.TreeItem {
 		return element;
 	}
 
-	getChildren(element?: MyTreeNode): Thenable<MyTreeNode[]> {
+	getChildren(element?: ActionTreeNode): Thenable<ActionTreeNode[]> {
 		if (!element) {
 			// Корневые элементы
 			return Promise.resolve([
-				new MyTreeNode('Init current project', vscode.TreeItemCollapsibleState.None, this.context, true),
+				new ActionTreeNode('Init current project', vscode.TreeItemCollapsibleState.None, this.context, true),
 			]);
 		} else {
 			// Дочерние элементы (если collapsible)
@@ -304,7 +272,7 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<MyTreeNode> {
 	}
 }
 
-class MyTreeNode extends vscode.TreeItem {
+class ActionTreeNode extends vscode.TreeItem {
 	constructor(
 		public readonly label_text: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
