@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 			writeJsonFileSync(tasksfilePath, tasks_data);
 
 		} catch (err) {
-			vscode.window.showErrorMessage(`Ошибка записи файла`);
+			vscode.window.showErrorMessage(`Ошибка записи файла ${tasksfilePath}`);
 			console.error(err);
 		}
 
