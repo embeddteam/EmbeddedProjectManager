@@ -8,6 +8,31 @@ import * as path from 'path';
 
 
 
+function findIocFiles(dir: string): string[] {
+  let results: string[] = [];
+
+  function walk(currentDir: string) {
+    const items = fs.readdirSync(currentDir);
+
+    for (const item of items) {
+      const fullPath = path.join(currentDir, item);
+      const stat = fs.statSync(fullPath);
+
+      if (stat.isDirectory()) {
+        walk(fullPath); // рекурсия
+      } else if (path.extname(item) === '.ioc') {
+		const relativePath = path.relative(dir, fullPath);
+        results.push(relativePath);
+      }
+    }
+  }
+
+  walk(dir);
+  return results;
+}
+
+
+
 // Функция для записи JSON в файл (перезаписывает, если файл существует)
 function writeJsonFileSync(filePath: string, data: any): void {
 	try {
@@ -188,25 +213,6 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		};
 
-		const cube_mx_task: TaskItem = {
-			type: "shell",
-			label: "Открыть STM32CubeMX для проекта",
-			command: "start",
-			args: [
-				"RGB_WiFi_MatrixLamp_CPP.ioc"
-			],
-			problemMatcher: [],
-			detail: "Открыть STM32CubeMX для проекта",
-			icon: {
-				id: "chip",
-				color: "terminal.ansiBlue"
-			}
-		};
-
-
-
-		tasks_data.tasks.push(cube_mx_task);
-
 
 
 		// Проверяем, что есть открытая рабочая область
@@ -217,6 +223,35 @@ export function activate(context: vscode.ExtensionContext) {
 
 		// Берём корень первой рабочей папки
 		const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
+		const config = vscode.workspace.getConfiguration('EPMVSCodeExtension');
+
+		const isNeedTofindIocFiles = config.get<boolean>('CLT.findIocFiles', true);
+
+		if (isNeedTofindIocFiles)
+		{
+			const iocFiles:string[] = findIocFiles(workspaceRoot);
+			console.log(iocFiles);
+			for (const item of iocFiles) {
+				const cube_mx_task: TaskItem = {
+					type: "shell",
+					label: `Открыть STM32CubeMX для проекта ${path.basename(item)}`,
+					command: "start",
+					args: [
+						`${item.replace('\\', '/')}`
+					],
+					problemMatcher: [],
+					detail: "Открыть STM32CubeMX для проекта",
+					icon: {
+						id: "chip",
+						color: "terminal.ansiBlue"
+					}
+				};
+
+				tasks_data.tasks.push(cube_mx_task);
+			}
+		}
+
 
 
 		// Путь к файлу

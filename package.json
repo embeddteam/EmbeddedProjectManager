@@ -61,6 +61,12 @@
           "default": "",
           "description": "Путь к набору инструментов командной строки",
           "scope": "window"
+        },
+        "EPMVSCodeExtension.CLT.findIocFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Искать файлы .ioc в папках проекта",
+          "scope": "window"
         }
       }
     }
