@@ -60,7 +60,25 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 		// Данные, которые нужно записать в JSON
-		const base_tasks_data = {
+
+		interface TaskItem
+		{
+			type: string;
+			label: string;
+			command: string;
+			args: string[];
+			options?: {
+				cwd: string;
+			};
+			problemMatcher?: string[];
+			detail?: string;
+			icon?: {
+				id: string,
+				color: string
+			}
+		}
+
+		let tasks_data = {
 			version: '2.0.0',
 			windows: {
 				options: {
@@ -164,13 +182,13 @@ export function activate(context: vscode.ExtensionContext) {
 					},
 					problemMatcher: []
 				}
-			],
+			] as TaskItem[],
 			presentation: {
 				clear: true
 			}
 		};
 
-		const cube_mx_task = {
+		const cube_mx_task: TaskItem = {
 			type: "shell",
 			label: "Открыть STM32CubeMX для проекта",
 			command: "start",
@@ -186,21 +204,8 @@ export function activate(context: vscode.ExtensionContext) {
 		};
 
 
-		let tasks_data = {
-			...base_tasks_data,
-			tasks: [
-				...base_tasks_data.tasks
-			]
-		};
 
-
-		// tasks_data = {
-		// 	...base_tasks_data,
-		// 	tasks: [
-		// 		...base_tasks_data.tasks,
-		// 		...cube_mx_task
-		// 	]
-		// };
+		tasks_data.tasks.push(cube_mx_task);
 
 
 
