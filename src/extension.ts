@@ -2,218 +2,20 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-import * as fs from 'fs';
-
 import * as path from 'path';
 
+import { writeJsonFileSync } from './file_json';
 
-
-function findIocFiles(dir: string): string[] {
-  let results: string[] = [];
-
-  function walk(currentDir: string) {
-    const items = fs.readdirSync(currentDir);
-
-    for (const item of items) {
-      const fullPath = path.join(currentDir, item);
-      const stat = fs.statSync(fullPath);
-
-      if (stat.isDirectory()) {
-        walk(fullPath); // рекурсия
-      } else if (path.extname(item) === '.ioc') {
-		const relativePath = path.relative(dir, fullPath);
-        results.push(relativePath);
-      }
-    }
-  }
-
-  walk(dir);
-  return results;
-}
-
-
-
-// Функция для записи JSON в файл (перезаписывает, если файл существует)
-function writeJsonFileSync(filePath: string, data: any): void {
-	try {
-		const jsonContent = JSON.stringify(data, null, 2); // с отступами для читаемости
-		if (!fs.existsSync(filePath)) {
-			if (!fs.existsSync(path.dirname(filePath))) {
-				fs.mkdirSync(path.dirname(filePath), { recursive: true });
-			}
-
-			fs.writeFileSync(filePath, jsonContent, 'utf8');
-			vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
-			console.log(`✅ Файл успешно записан: ${filePath}`);
-		}
-		else {
-			const confirm = 'Да';
-			const cancel = 'Нет';
-
-			vscode.window.showWarningMessage(
-				`Файл ${path.basename(filePath)}  уже существуют. Перезаписать?`,
-				{ modal: true },
-				confirm,
-				cancel
-			).then((result) => {
-				console.log(result);
-				if (result === confirm) {
-					fs.writeFileSync(filePath, jsonContent, 'utf8');
-					vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
-				}
-				else if (result === cancel) {
-					return;
-				}
-			});
-		}
-
-	} catch (error) {
-		console.error('❌ Ошибка записи файла:', error);
-	}
-}
+import { CreateTasksContent } from './tasks_generator';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "helloworld" is now active!');
 
-
-	const generate_file = vscode.commands.registerCommand('embeddedprojectmanager.generateFile', () => {
+	const init_project = vscode.commands.registerCommand('embeddedprojectmanager.init_project', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-		// Данные, которые нужно записать в JSON
-
-		interface TaskItem
-		{
-			type: string;
-			label: string;
-			command: string;
-			args: string[];
-			options?: {
-				cwd: string;
-			};
-			problemMatcher?: string[];
-			detail?: string;
-			icon?: {
-				id: string,
-				color: string
-			}
-		}
-
-		let tasks_data = {
-			version: '2.0.0',
-			windows: {
-				options: {
-					shell: {
-						executable: "cmd.exe",
-						args: ["/d", "/c"]
-					}
-				}
-			},
-			tasks: [
-				{
-					type: "shell",
-					label: "Build project",
-					command: "cmake",
-					args: ["--build", "${command:cmake.buildDirectory}", "--target", "${command:cmake.buildTargetName}"],
-					options: {
-						cwd: "${workspaceFolder}"
-					},
-					problemMatcher: ["$gcc"],
-					group: {
-						kind: "build",
-						isDefault: true
-					},
-					icon: {
-						id: "tools",
-						color: "terminal.ansiGreen"
-					}
-				},
-				{
-					type: "shell",
-					label: "Clean project",
-					command: "cmake",
-					args: ["--build", "${command:cmake.buildDirectory}", "--target", "clean"],
-					options: {
-						cwd: "${workspaceFolder}"
-					},
-					problemMatcher: [],
-					icon: {
-						id: "trash",
-						color: "terminal.ansiRed"
-					}
-				},
-				{
-					type: "shell",
-					label: "CubeProg: Flash project (SWD)",
-					command: "STM32_Programmer_CLI",
-					args: [
-						"--connect",
-						"port=swd",
-						"--download",
-						"${command:cmake.launchTargetPath}",
-						// Let CMake extension decide executable: "${command:cmake.launchTargetPath}",
-						"-hardRst", // Hardware reset - if rst pin is connected
-						"-rst", // Software reset (backup)
-						"--start" // Start execution
-					],
-					options: {
-						"cwd": "${workspaceFolder}"
-					},
-					problemMatcher: [],
-					icon: {
-						id: "flame",
-						color: "terminal.ansiRed"
-					}
-				},
-				{
-					label: "Build + Flash",
-					dependsOrder: "sequence",
-					dependsOn: [
-						"CMake: clean rebuild",
-						"CubeProg: Flash project (SWD)",
-					],
-					icon: {
-						id: "flame",
-						color: "terminal.ansiRed"
-					}
-				},
-				{
-					type: "cmake",
-					label: "CMake: clean rebuild",
-					command: "cleanRebuild",
-					targets: [
-						"all"
-					],
-					preset: "${command:cmake.activeBuildPresetName}",
-					group: "build",
-					problemMatcher: [],
-					detail: "CMake template clean rebuild task",
-					icon: {
-						id: "sync",
-						color: "terminal.ansiGreen"
-					}
-				},
-				{
-					type: "shell",
-					label: "CubeProg: List all available communication interfaces",
-					command: "STM32_Programmer_CLI",
-					args: ["--list"],
-					options: {
-						cwd: "${workspaceFolder}"
-					},
-					problemMatcher: []
-				}
-			] as TaskItem[],
-			presentation: {
-				clear: true
-			}
-		};
-
-
 
 		// Проверяем, что есть открытая рабочая область
 		if (!vscode.workspace.workspaceFolders) {
@@ -228,38 +30,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const isNeedTofindIocFiles = config.get<boolean>('CLT.findIocFiles', true);
 
-		if (isNeedTofindIocFiles)
-		{
-			const iocFiles:string[] = findIocFiles(workspaceRoot);
-			console.log(iocFiles);
-			for (const item of iocFiles) {
-				const cube_mx_task: TaskItem = {
-					type: "shell",
-					label: `Открыть STM32CubeMX для проекта ${path.basename(item)}`,
-					command: "start",
-					args: [
-						`${item.replace('\\', '/')}`
-					],
-					problemMatcher: [],
-					detail: "Открыть STM32CubeMX для проекта",
-					icon: {
-						id: "chip",
-						color: "terminal.ansiBlue"
-					}
-				};
+		const tasks_data = CreateTasksContent(workspaceRoot, isNeedTofindIocFiles);
 
-				tasks_data.tasks.push(cube_mx_task);
-			}
-		}
-
-
-
-		// Путь к файлу
-		const filePath = path.join(workspaceRoot, '.vscode', 'tasks.json');
-
+		const tasksfilePath = path.join(workspaceRoot, '.vscode', 'tasks.json');
 
 		try {
-			writeJsonFileSync(filePath, tasks_data);
+			writeJsonFileSync(tasksfilePath, tasks_data);
 
 		} catch (err) {
 			vscode.window.showErrorMessage(`Ошибка записи файла`);
@@ -268,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	});
 
-	context.subscriptions.push(generate_file);
+	context.subscriptions.push(init_project);
 
 
 	// Регистрируем TreeDataProvider
@@ -334,7 +110,7 @@ class ActionTreeNode extends vscode.TreeItem {
 
 		if (isEnabled) {
 			this.command = {
-				command: 'embeddedprojectmanager.generateFile',
+				command: 'embeddedprojectmanager.init_project',
 				title: '',
 				arguments: [this.label]
 			};

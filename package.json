@@ -30,8 +30,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "embeddedprojectmanager.generateFile",
-        "title": "Embedded Project Manager: Generate file"
+        "command": "embeddedprojectmanager.init_project",
+        "title": "Embedded Project Manager: Init project"
       }
     ],
     "viewsContainers": {
