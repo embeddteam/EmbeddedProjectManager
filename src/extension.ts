@@ -8,6 +8,23 @@ import { writeJsonFileSync } from './file_json';
 
 import { CreateTasksContent } from './tasks_generator';
 
+
+async function ShowQyuickPick()
+{
+	const items: vscode.QuickPickItem[] = [
+		{ label: 'Создать файл', description: 'Создаёт новый файл' },
+		{ label: 'Переименовать', description: 'Переименовывает текущий файл' },
+		{ label: 'Запустить анализ', description: 'Запускает статический анализ' },
+		{ label: 'Отмена', description: 'Ничего не делать' }
+		];
+
+		const selection = await vscode.window.showQuickPick(items, {
+		placeHolder: 'Выберите действие...',
+		title: 'Мои действия',
+		canPickMany: false // или true, если нужно мультиселект
+	});
+}
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
