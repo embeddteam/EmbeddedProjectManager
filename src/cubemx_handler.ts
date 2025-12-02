@@ -2,7 +2,7 @@ import * as fs from 'fs';
 
 import * as path from 'path';
 
-export function findIocFiles(dir: string): string[] {
+export function findFiles(dir: string, ext: string): string[] {
   let results: string[] = [];
 
   function walk(currentDir: string) {
@@ -14,7 +14,7 @@ export function findIocFiles(dir: string): string[] {
 
       if (stat.isDirectory()) {
         walk(fullPath); // рекурсия
-      } else if (path.extname(item) === '.ioc') {
+      } else if (path.extname(item) === ext) {
         const relativePath = path.relative(dir, fullPath);
         results.push(relativePath);
       }

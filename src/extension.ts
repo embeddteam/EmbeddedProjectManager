@@ -8,7 +8,7 @@ import { writeJsonFileSync } from './file_json';
 
 import { CreateTasksContent } from './tasks_generator';
 
-import { findIocFiles, extractSTM32BaseDeviceIdFromFile } from './cubemx_handler';
+import { findFiles, extractSTM32BaseDeviceIdFromFile } from './cubemx_handler';
 
 import { CreateLaunchContent } from './launch_generator';
 
@@ -50,7 +50,40 @@ function ShowQyuickPick() {
 			}
 		}
 	});
+}
 
+
+function InitWorkspace(workspaceRoot: string): Promise<string | undefined> {
+	return new Promise((resolve, reject) => {
+		const result_files = findFiles(workspaceRoot, '.code-workspace');
+		if (result_files.length === 1) {
+			resolve(result_files[0]);
+		}
+		else {
+			const confirm = 'Да';
+
+			const cancel = 'Нет';
+
+			const filename = `${path.basename(workspaceRoot)}.code-workspace`;
+
+			path.basename(workspaceRoot);
+
+			vscode.window.showInformationMessage(
+				`Создать файл рабочей области ${filename}?`,
+				{ modal: true },
+				confirm,
+				cancel
+			).then((result) => {
+				console.log(result);
+				if (result === confirm) {
+					resolve(filename);
+				}
+				else {
+					resolve(undefined);
+				}
+			});
+		}
+	});
 
 }
 
@@ -83,29 +116,17 @@ export function activate(context: vscode.ExtensionContext) {
 		const isNeedToGenerateOpenOCD = config.get<boolean>('CLT.GenerateOpenOCD', false);
 
 
+		InitWorkspace(workspaceRoot).then((workspaceFile) => {
 
-		const confirm = 'Да';
-
-		const cancel = 'Нет';
-
-		vscode.window.showInformationMessage(
-			`Создать файл рабочей области ${path.basename(workspaceRoot)}.code-workspace?`,
-			{ modal: true },
-			confirm,
-			cancel
-		).then((result) => {
-			console.log(result);
-			if (result === confirm) {
-
+			if (workspaceFile) {
+				
 			}
-			else {
-
-			}
+			console.log(workspaceFile);
 		});
 
 
 		if (isNeedTofindIocFiles) {
-			const ioc_files = findIocFiles(workspaceRoot);
+			const ioc_files = findFiles(workspaceRoot, '.ioc');
 
 			if (ioc_files.length > 0) {
 				isSTM32_Project = true;

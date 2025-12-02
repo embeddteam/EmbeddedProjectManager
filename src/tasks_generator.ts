@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { findIocFiles } from './cubemx_handler';
+import { findFiles } from './cubemx_handler';
 
 interface TaskItem {
     type: string;
@@ -132,7 +132,7 @@ export function CreateTasksContent(workspaceFolder: string, isNeedAddCubeMx: boo
 
     if (isNeedAddCubeMx)
     {
-        const iocFiles:string[] = findIocFiles(workspaceFolder);
+        const iocFiles:string[] = findFiles(workspaceFolder, '.ioc');
         console.log(iocFiles);
         for (const item of iocFiles) {
             const cube_mx_task: TaskItem = {
