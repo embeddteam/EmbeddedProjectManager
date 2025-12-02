@@ -17,19 +17,41 @@ import { CreateWorkspaceContent } from './workspace_generator';
 import { CreateSettingsContent, SettingsType } from './settings_generator';
 
 
-async function ShowQyuickPick() {
+function ShowQyuickPick() {
+
+	const item_workspace = 'Сохранить настройки в файл рабочей области';
+	const item_settings = 'Сохранить настройки в файл настроек проекта';
+	const item_cancel = 'Не создавать настройки';
+
 	const items: vscode.QuickPickItem[] = [
-		{ label: 'Создать файл', description: 'Создаёт новый файл' },
-		{ label: 'Переименовать', description: 'Переименовывает текущий файл' },
-		{ label: 'Запустить анализ', description: 'Запускает статический анализ' },
-		{ label: 'Отмена', description: 'Ничего не делать' }
+		{ label: item_workspace, description: 'Сохранить настройки в файл .code-workspace' },
+		{ label: item_settings, description: 'Сохранить настройки в файл .vscode/settings.json' },
+		{ label: item_cancel, description: 'Не создавать настройки' }
 	];
 
-	const selection = await vscode.window.showQuickPick(items, {
+	// Добавляем await для ожидания результата
+	const selection = vscode.window.showQuickPick(items, {
 		placeHolder: 'Выберите действие...',
 		title: 'Мои действия',
 		canPickMany: false // или true, если нужно мультиселект
+	}).then((selection) => {
+		// Обработка выбора
+		if (selection) {
+			switch (selection.label) {
+				case item_workspace:
+
+					break;
+				case item_settings:
+
+					break;
+				case item_cancel:
+
+					break;
+			}
+		}
 	});
+
+
 }
 
 // This method is called when your extension is activated
@@ -59,6 +81,27 @@ export function activate(context: vscode.ExtensionContext) {
 		const isNeedTofindIocFiles = config.get<boolean>('CLT.findIocFiles', true);
 
 		const isNeedToGenerateOpenOCD = config.get<boolean>('CLT.GenerateOpenOCD', false);
+
+
+
+		const confirm = 'Да';
+
+		const cancel = 'Нет';
+
+		vscode.window.showInformationMessage(
+			`Создать файл рабочей области ${path.basename(workspaceRoot)}.code-workspace?`,
+			{ modal: true },
+			confirm,
+			cancel
+		).then((result) => {
+			console.log(result);
+			if (result === confirm) {
+
+			}
+			else {
+
+			}
+		});
 
 
 		if (isNeedTofindIocFiles) {
