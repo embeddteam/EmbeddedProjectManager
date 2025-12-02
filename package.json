@@ -67,6 +67,12 @@
           "default": true,
           "description": "Искать файлы .ioc в папках проекта",
           "scope": "window"
+        },
+        "EPMVSCodeExtension.CLT.GenerateOpenOCD": {
+          "type": "boolean",
+          "default": false,
+          "description": "Использовать OpenOCD для отладки проекта",
+          "scope": "window"
         }
       }
     }

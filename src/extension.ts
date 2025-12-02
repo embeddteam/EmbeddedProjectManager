@@ -10,6 +10,8 @@ import { CreateTasksContent } from './tasks_generator';
 
 import { findIocFiles, extractSTM32BaseDeviceIdFromFile } from './cubemx_handler';
 
+import { CreateLaunchContent } from './launch_generator';
+
 
 async function ShowQyuickPick() {
 	const items: vscode.QuickPickItem[] = [
@@ -52,6 +54,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const isNeedTofindIocFiles = config.get<boolean>('CLT.findIocFiles', true);
 
+		const isNeedToGenerateOpenOCD = config.get<boolean>('CLT.GenerateOpenOCD', false);
+
 
 		if (isNeedTofindIocFiles) {
 			const ioc_files = findIocFiles(workspaceRoot);
@@ -69,6 +73,18 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 
 			console.log(STM32_Devices);
+		}
+
+		const launch_data = CreateLaunchContent(STM32_Devices, isSTM32_Project, isNeedToGenerateOpenOCD);
+
+		const launchfilePath = path.join(workspaceRoot, '.vscode', 'launch.json');
+
+		try {
+			writeJsonFileSync(launchfilePath, launch_data);
+
+		} catch (err) {
+			vscode.window.showErrorMessage(`Ошибка записи файла ${launchfilePath}`);
+			console.error(err);
 		}
 
 		const tasks_data = CreateTasksContent(workspaceRoot, isNeedTofindIocFiles);

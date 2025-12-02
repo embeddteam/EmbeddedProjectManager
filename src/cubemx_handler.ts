@@ -44,15 +44,7 @@ export function extractSTM32BaseDeviceIdFromFile(filePath: string): string | nul
       return null;
     }
 
-    // Парсим базовую часть: STM32 + серия (например, F429, H743, L476)
-    // Поддерживаем шаблоны: STM32F429, STM32H743V, STM32MP157 (11 символов)
-    const stm32Match = fullDeviceId.match(
-      /^(STM32(?:MP\d{3}|WL\d{2}|[A-Z]\d{2,4}))/i
-    );
-
-    if (stm32Match) {
-      return stm32Match[1];
-    }
+    return fullDeviceId;
 
     // fallback: если формат не STM32 — возвращаем как есть (или можно вернуть null)
     console.warn(`❓ Unexpected DeviceId format: "${fullDeviceId}"`);
