@@ -17,7 +17,14 @@ import { CreateWorkspaceContent } from './workspace_generator';
 import { CreateSettingsContent, SettingsType } from './settings_generator';
 
 
-function ShowQyuickPick() {
+enum SettingsPlacementType {
+	Workspace = 'workspace',
+	Settings = 'settings',
+	Cancel = 'cancel'
+}
+
+
+async function ChooseSettingsPlacement(): Promise<SettingsPlacementType> {
 
 	const item_workspace = 'Сохранить настройки в файл рабочей области';
 	const item_settings = 'Сохранить настройки в файл настроек проекта';
@@ -30,61 +37,57 @@ function ShowQyuickPick() {
 	];
 
 	// Добавляем await для ожидания результата
-	const selection = vscode.window.showQuickPick(items, {
+	const selection = await vscode.window.showQuickPick(items, {
 		placeHolder: 'Выберите действие...',
 		title: 'Мои действия',
 		canPickMany: false // или true, если нужно мультиселект
-	}).then((selection) => {
-		// Обработка выбора
-		if (selection) {
-			switch (selection.label) {
-				case item_workspace:
-
-					break;
-				case item_settings:
-
-					break;
-				case item_cancel:
-
-					break;
-			}
-		}
 	});
+
+	if (selection) {
+		switch (selection.label) {
+			case item_workspace:
+				return SettingsPlacementType.Workspace;
+			case item_settings:
+				return SettingsPlacementType.Settings;
+			case item_cancel:
+				return SettingsPlacementType.Cancel;
+		}
+	}
+
+	return SettingsPlacementType.Cancel;
 }
 
 
-function InitWorkspace(workspaceRoot: string): Promise<string | undefined> {
-	return new Promise((resolve, reject) => {
-		const result_files = findFiles(workspaceRoot, '.code-workspace');
-		if (result_files.length === 1) {
-			resolve(result_files[0]);
+async function InitWorkspace(workspaceRoot: string): Promise<string | undefined> {
+	const result_files = findFiles(workspaceRoot, '.code-workspace');
+	if (result_files.length === 1) {
+		return result_files[0];
+	}
+	else {
+		const confirm = 'Да';
+
+		const cancel = 'Нет';
+
+		const filename = `${path.basename(workspaceRoot)}.code-workspace`;
+
+		path.basename(workspaceRoot);
+
+		const selection = await vscode.window.showInformationMessage(
+			`Создать файл рабочей области ${filename}?`,
+			{ modal: true },
+			confirm,
+			cancel
+		);
+
+		switch (selection) {
+			case confirm:
+				return filename;
+			case cancel:
+				return undefined;
 		}
-		else {
-			const confirm = 'Да';
+	}
 
-			const cancel = 'Нет';
-
-			const filename = `${path.basename(workspaceRoot)}.code-workspace`;
-
-			path.basename(workspaceRoot);
-
-			vscode.window.showInformationMessage(
-				`Создать файл рабочей области ${filename}?`,
-				{ modal: true },
-				confirm,
-				cancel
-			).then((result) => {
-				console.log(result);
-				if (result === confirm) {
-					resolve(filename);
-				}
-				else {
-					resolve(undefined);
-				}
-			});
-		}
-	});
-
+	return undefined;
 }
 
 // This method is called when your extension is activated
@@ -92,7 +95,7 @@ function InitWorkspace(workspaceRoot: string): Promise<string | undefined> {
 export function activate(context: vscode.ExtensionContext) {
 
 
-	const init_project = vscode.commands.registerCommand('embeddedprojectmanager.init_project', () => {
+	const init_project = vscode.commands.registerCommand('embeddedprojectmanager.init_project', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 
@@ -115,14 +118,64 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const isNeedToGenerateOpenOCD = config.get<boolean>('CLT.GenerateOpenOCD', false);
 
+		const workspaceFile = await InitWorkspace(workspaceRoot);
 
-		InitWorkspace(workspaceRoot).then((workspaceFile) => {
+		if (workspaceFile) {
+			const settings_placement = await ChooseSettingsPlacement();
 
-			if (workspaceFile) {
-				
+			switch (settings_placement) {
+				case SettingsPlacementType.Workspace:
+					{
+						const settings = CreateSettingsContent(SettingsType.Project);
+						const settings_json = CreateSettingsContent(SettingsType.CortexDebug);
+						const workspace_json = CreateWorkspaceContent(settings);
+						writeJsonFileSync(path.join(workspaceRoot, path.basename(workspaceFile)), workspace_json);
+						writeJsonFileSync(path.join(workspaceRoot, '.vscode', 'settings.json'), settings_json);
+					}
+					break;
+
+				case SettingsPlacementType.Settings:
+					{
+						const settings_json = CreateSettingsContent(SettingsType.All);
+						const workspace_json = CreateWorkspaceContent(undefined);
+						writeJsonFileSync(path.join(workspaceRoot, path.basename(workspaceFile)), workspace_json);
+						writeJsonFileSync(path.join(workspaceRoot, '.vscode', 'settings.json'), settings_json);
+					}
+
+					break;
+				case undefined:
+				case SettingsPlacementType.Cancel:
+					{
+						const workspace_json = CreateWorkspaceContent(undefined);
+						writeJsonFileSync(path.join(workspaceRoot, path.basename(workspaceFile)), workspace_json);
+					}
+					break;
 			}
-			console.log(workspaceFile);
-		});
+		}
+		else {
+			const confirm = 'Да';
+
+			const cancel = 'Нет';
+
+			path.basename(workspaceRoot);
+
+			const selection = await vscode.window.showInformationMessage(
+				`Создать файл настроек .vscode/settings.json?`,
+				{ modal: true },
+				confirm,
+				cancel
+			);
+
+			switch (selection) {
+				case confirm:
+					const settings_json = CreateSettingsContent(SettingsType.All);
+					writeJsonFileSync(path.join(workspaceRoot, '.vscode', 'settings.json'), settings_json);
+					break;
+				case cancel:
+
+					break;
+			}
+		}
 
 
 		if (isNeedTofindIocFiles) {
