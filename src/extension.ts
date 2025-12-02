@@ -12,6 +12,10 @@ import { findIocFiles, extractSTM32BaseDeviceIdFromFile } from './cubemx_handler
 
 import { CreateLaunchContent } from './launch_generator';
 
+import { CreateWorkspaceContent } from './workspace_generator';
+
+import { CreateSettingsContent, SettingsType } from './settings_generator';
+
 
 async function ShowQyuickPick() {
 	const items: vscode.QuickPickItem[] = [
