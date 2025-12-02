@@ -51,7 +51,7 @@ export function CreateLaunchContent(devices: string[], isStm32Device: boolean, i
                     "interface": "swd",
                     "serialNumber": "",        //Set ST-Link ID if you use multiple at the same time
                     "runToEntryPoint": "main",
-                    "svdFile": `${svd_name ? `config:EPMVSCodeExtension.CLT.path/STMicroelectronics_CMSIS_SVD/${svd_name[1]}.svd` : ''}`,
+                    "svdFile": `${svd_name ? `\${config:EPMVSCodeExtension.CLT.path}/STMicroelectronics_CMSIS_SVD/${svd_name[1]}.svd` : `\${config:EPMVSCodeExtension.CLT.path}/PathToSVD`}`,
                     "v1": false,               //Change it depending on ST Link version
                     "serverpath": "${config:EPMVSCodeExtension.CLT.path}/STLink-gdb-server/bin/ST-LINK_gdbserver",
                     "stm32cubeprogrammer": "${config:EPMVSCodeExtension.CLT.path}/STM32CubeProgrammer/bin",
@@ -81,7 +81,7 @@ export function CreateLaunchContent(devices: string[], isStm32Device: boolean, i
                         "servertype": "openocd",
                         "device": device, //MCU used
                         "runToEntryPoint": "main",
-                        "svdFile": `${svd_name ? `config:EPMVSCodeExtension.CLT.path/STMicroelectronics_CMSIS_SVD/${svd_name[1]}.svd` : ''}`,
+                        "svdFile": `${svd_name ? `\${config:EPMVSCodeExtension.CLT.path}/STMicroelectronics_CMSIS_SVD/${svd_name[1]}.svd` : '\${config:EPMVSCodeExtension.CLT.path}/PathToSVD'}`,
                         "liveWatch": {
                             "enabled": true,
                             "samplesPerSecond": 4
@@ -98,7 +98,61 @@ export function CreateLaunchContent(devices: string[], isStm32Device: boolean, i
     }
 
 
+    if (!ready) {
+        const stlinkConfig: LaunchItem = {
+            "name": `Cortex Debug (ST-Link)`,
+            "cwd": "${workspaceFolder}",
+            "type": "cortex-debug",
+            "executable": "${command:cmake.launchTargetPath}",
+            "request": "launch",
+            "servertype": "stlink",
+            "device": "Device Name", //MCU used
+            "interface": "swd",
+            "serialNumber": "",        //Set ST-Link ID if you use multiple at the same time
+            "runToEntryPoint": "main",
+            "svdFile": '\${config:EPMVSCodeExtension.CLT.path}/PathToSVD',
+            "v1": false,               //Change it depending on ST Link version
+            "serverpath": "${config:EPMVSCodeExtension.CLT.path}/STLink-gdb-server/bin/ST-LINK_gdbserver",
+            "stm32cubeprogrammer": "${config:EPMVSCodeExtension.CLT.path}/STM32CubeProgrammer/bin",
+            "stlinkPath": "${config:EPMVSCodeExtension.CLT.path}/STLink-gdb-server/bin/ST-LINK_gdbserver",
+            "armToolchainPath": "${config:EPMVSCodeExtension.CLT.path}/GNU-tools-for-STM32/bin",
+            "gdbPath": "${config:EPMVSCodeExtension.CLT.path}/GNU-tools-for-STM32/bin/arm-none-eabi-gdb",
+            "serverArgs": [
+                "-m", "0",
+            ],
+            "liveWatch": {
+                "enabled": true,
+                "samplesPerSecond": 4
+            }
+        };
 
+        configurations.push(stlinkConfig);
+
+
+        // Добавить поддержку OpenOCD при необходимости
+        if (isGenerateOpenOcd) {
+            const OpenOCDConfig: LaunchItem = {
+                "name": `Cortex Debug (OpenOCD)`,
+                "cwd": "${workspaceFolder}",
+                "type": "cortex-debug",
+                "executable": "${command:cmake.launchTargetPath}",
+                "request": "launch",
+                "servertype": "openocd",
+                "device": "Device Name", //MCU used
+                "runToEntryPoint": "main",
+                "svdFile": '\${config:EPMVSCodeExtension.CLT.path}/PathToSVD',
+                "liveWatch": {
+                    "enabled": true,
+                    "samplesPerSecond": 4
+                },
+                "configFiles": []
+            };
+
+            configurations.push(OpenOCDConfig);
+        }
+
+
+    }
     return {
         version: "0.2.0",
         configurations: configurations
