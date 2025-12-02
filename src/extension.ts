@@ -8,17 +8,18 @@ import { writeJsonFileSync } from './file_json';
 
 import { CreateTasksContent } from './tasks_generator';
 
+import { findIocFiles, extractSTM32BaseDeviceIdFromFile } from './cubemx_handler';
 
-async function ShowQyuickPick()
-{
+
+async function ShowQyuickPick() {
 	const items: vscode.QuickPickItem[] = [
 		{ label: 'Создать файл', description: 'Создаёт новый файл' },
 		{ label: 'Переименовать', description: 'Переименовывает текущий файл' },
 		{ label: 'Запустить анализ', description: 'Запускает статический анализ' },
 		{ label: 'Отмена', description: 'Ничего не делать' }
-		];
+	];
 
-		const selection = await vscode.window.showQuickPick(items, {
+	const selection = await vscode.window.showQuickPick(items, {
 		placeHolder: 'Выберите действие...',
 		title: 'Мои действия',
 		canPickMany: false // или true, если нужно мультиселект
@@ -40,12 +41,35 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
+		let isSTM32_Project: boolean = false;
+
+		let STM32_Devices: string[] = [];
+
 		// Берём корень первой рабочей папки
 		const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
 		const config = vscode.workspace.getConfiguration('EPMVSCodeExtension');
 
 		const isNeedTofindIocFiles = config.get<boolean>('CLT.findIocFiles', true);
+
+
+		if (isNeedTofindIocFiles) {
+			const ioc_files = findIocFiles(workspaceRoot);
+
+			if (ioc_files.length > 0) {
+				isSTM32_Project = true;
+
+				for (const item of ioc_files) {
+					const device = extractSTM32BaseDeviceIdFromFile(path.join(workspaceRoot, item));
+					console.log(device);
+					if (device !== null) {
+						STM32_Devices.push(device);
+					}
+				}
+			}
+
+			console.log(STM32_Devices);
+		}
 
 		const tasks_data = CreateTasksContent(workspaceRoot, isNeedTofindIocFiles);
 
