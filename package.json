@@ -21,7 +21,8 @@
     "mcu-debug.memory-view",                     
     "mcu-debug.peripheral-viewer",               
     "mcu-debug.rtos-views",
-    "ms-vscode.cpptools",                      
+    "ms-vscode.cpptools",
+    "ms-vscode.cpptools-extension-pack",                      
     "ms-vscode.cpptools-themes",
     "ms-vscode.cmake-tools"                 
   ],
