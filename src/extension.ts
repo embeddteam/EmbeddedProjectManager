@@ -4,6 +4,8 @@ import * as vscode from 'vscode';
 
 import * as path from 'path';
 
+import * as fs from 'fs';
+
 import { writeJsonFileSync } from './file_json';
 
 import { CreateTasksContent } from './tasks_generator';
@@ -17,6 +19,8 @@ import { CreateWorkspaceContent } from './workspace_generator';
 import { CreateSettingsContent, SettingsType } from './settings_generator';
 
 import { CreateCppPropertiesContent } from './cpp_prop_generator';
+
+import { CreateGitignoreContent } from './gitignore_generator';
 
 
 enum SettingsPlacementType {
@@ -217,7 +221,30 @@ export function activate(context: vscode.ExtensionContext) {
 
 		writeJsonFileSync(path.join(workspaceRoot, '.vscode', 'c_cpp_properties.json'), cpp_prop_data);
 
-		
+		let gitIgnoreAddons:string[] = [];
+
+		if (fs.existsSync(path.join(workspaceRoot, '.vscode', 'settings.json')) && IsNeedToAddSettingsToGitignore)
+		{
+			const confirm = 'Да';
+			const cancel = 'Нет';
+
+			const result = await vscode.window.showInformationMessage(
+				`Добавить файл .vscode/settings.json в .gitignore?`,
+				{ modal: true },
+				confirm,
+				cancel
+			);
+
+			if (result === confirm) 
+			{
+				gitIgnoreAddons.push('.vscode/settings.json');
+			}
+		}
+
+
+		const gitignore_data = CreateGitignoreContent(gitIgnoreAddons);
+
+		fs.writeFileSync(path.join(workspaceRoot, '.gitignore'), gitignore_data, 'utf8');
 
 
 	});
