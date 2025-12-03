@@ -3,7 +3,7 @@
   "displayName": "Embedded Project Manager",
   "icon": "images/icon.png",
   "description": "Extension for managing embedded projects",
-  "version": "0.0.1-rc1",
+  "version": "0.0.1",
   "publisher": "EmbeddTeam",
   "repository": {
     "type": "git",
