@@ -2,14 +2,10 @@ name: Create Release
 
 on:
   workflow_dispatch:
-    # inputs:
-    #   version:
-    #     description: 'Version to release'
-    #     required: false
-    #     default: ''
 
 env:
   IS_PRERELEASE: 'false'
+  PACKAGE_NAME: 'EmbeddedProjectManager'
 
 jobs:
   release:
@@ -23,6 +19,19 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Install package creator
+        run: npm install -g @vscode/vsce
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build extension
+        run: vsce package
+
+      # - name: Rename extension
+      #   run: mv embeddedprojectmanager-${{ env.VERSION }}.vsix ${env.PACKAGE_NAME}-${{ env.VERSION }}.vsix
+      
 
       - name: Print version
         run: echo ${{ env.VERSION }}
@@ -43,7 +52,7 @@ jobs:
 
       - name: Prepare release notes
         run: |
-          echo "## [${{ needs.prepare.outputs.version}}] - $(date +'%Y-%m-%d')" >> Release_Notes.md 
+          echo "## [${{ env.VERSION }}] - $(date +'%Y-%m-%d')" >> Release_Notes.md 
           echo "" >> Release_Notes.md
           echo "## Изменения:" >> Release_Notes.md 
           echo "${{ steps.changelog_release.outputs.content }}" >> Release_Notes.md
@@ -56,4 +65,13 @@ jobs:
           prerelease: ${{ env.IS_PRERELEASE }}
           tag: ${{ env.VERSION }}
           commit: ${{ github.ref_name }}
+
+
+      - name: Upload vsix to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: embeddedprojectmanager-${{ env.VERSION }}.vsix
+          asset_name: ${env.PACKAGE_NAME}-${{ env.VERSION }}.vsix
+          tag: ${{ env.VERSION }}
 
