@@ -221,10 +221,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 		writeJsonFileSync(path.join(workspaceRoot, '.vscode', 'c_cpp_properties.json'), cpp_prop_data);
 
-		let gitIgnoreAddons:string[] = [];
+		let gitIgnoreAddons: string[] = [];
 
-		if (fs.existsSync(path.join(workspaceRoot, '.vscode', 'settings.json')) && IsNeedToAddSettingsToGitignore)
-		{
+		if (fs.existsSync(path.join(workspaceRoot, '.vscode', 'settings.json')) && IsNeedToAddSettingsToGitignore) {
 			const confirm = 'Да';
 			const cancel = 'Нет';
 
@@ -235,8 +234,7 @@ export function activate(context: vscode.ExtensionContext) {
 				cancel
 			);
 
-			if (result === confirm) 
-			{
+			if (result === confirm) {
 				gitIgnoreAddons.push('.vscode/settings.json');
 			}
 		}
@@ -246,6 +244,27 @@ export function activate(context: vscode.ExtensionContext) {
 
 		fs.writeFileSync(path.join(workspaceRoot, '.gitignore'), gitignore_data, 'utf8');
 
+		if (workspaceFile) {
+			const workspaceUri = vscode.Uri.file(path.join(workspaceRoot, workspaceFile));
+
+			const OpenCurrent = 'Открыть в текущем окне';
+			const OpenNew = 'Открыть в новом окне'; 
+			// Предложение открыть рабочую область
+			vscode.window.showInformationMessage(
+				'Рабочая область создана. Открыть её?',
+				OpenCurrent,
+				OpenNew
+			).then(selection => {
+				if (selection === OpenCurrent) {
+					// true — открыть в текущем окне (перезагрузит окно)
+					vscode.commands.executeCommand('vscode.openFolder', workspaceUri, false);
+				}
+				if (selection === OpenNew) {
+					// false — открыть в новом окне (не перезагружать окно)
+					vscode.commands.executeCommand('vscode.openFolder', workspaceUri, true);
+				}
+			});
+		}
 
 	});
 
