@@ -1,9 +1,6 @@
-# Change Log
+## Head
 
-All notable changes to the "helloworld" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+## 0.0.1
+* Возможность генерации конфигурационных файлов для проекта
+* Возможность генерации задач сборки для проекта
+* Возможность генерации файлов запуска для проекта
