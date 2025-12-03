@@ -16,6 +16,8 @@ import { CreateWorkspaceContent } from './workspace_generator';
 
 import { CreateSettingsContent, SettingsType } from './settings_generator';
 
+import { CreateCppPropertiesContent } from './cpp_prop_generator';
+
 
 enum SettingsPlacementType {
 	Workspace = 'workspace',
@@ -120,6 +122,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const workspaceFile = await InitWorkspace(workspaceRoot);
 
+		let IsNeedToAddSettingsToGitignore = false;
+
 		if (workspaceFile) {
 			const settings_placement = await ChooseSettingsPlacement();
 
@@ -131,6 +135,7 @@ export function activate(context: vscode.ExtensionContext) {
 						const workspace_json = CreateWorkspaceContent(settings);
 						writeJsonFileSync(path.join(workspaceRoot, path.basename(workspaceFile)), workspace_json);
 						writeJsonFileSync(path.join(workspaceRoot, '.vscode', 'settings.json'), settings_json);
+						IsNeedToAddSettingsToGitignore = true;
 					}
 					break;
 
@@ -200,25 +205,20 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const launchfilePath = path.join(workspaceRoot, '.vscode', 'launch.json');
 
-		try {
-			writeJsonFileSync(launchfilePath, launch_data);
-
-		} catch (err) {
-			vscode.window.showErrorMessage(`Ошибка записи файла ${launchfilePath}`);
-			console.error(err);
-		}
+		writeJsonFileSync(launchfilePath, launch_data);
 
 		const tasks_data = CreateTasksContent(workspaceRoot, isNeedTofindIocFiles);
 
 		const tasksfilePath = path.join(workspaceRoot, '.vscode', 'tasks.json');
 
-		try {
-			writeJsonFileSync(tasksfilePath, tasks_data);
+		writeJsonFileSync(tasksfilePath, tasks_data);
 
-		} catch (err) {
-			vscode.window.showErrorMessage(`Ошибка записи файла ${tasksfilePath}`);
-			console.error(err);
-		}
+		const cpp_prop_data = CreateCppPropertiesContent();
+
+		writeJsonFileSync(path.join(workspaceRoot, '.vscode', 'c_cpp_properties.json'), cpp_prop_data);
+
+		
+
 
 	});
 
