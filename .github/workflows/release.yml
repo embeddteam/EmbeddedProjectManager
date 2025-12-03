@@ -21,6 +21,9 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+      - name: Print version
+        run: echo ${{ env.VERSION }}
+        
       # - name: Create Release
       #   uses: actions/create-release@v1
       #   env:
