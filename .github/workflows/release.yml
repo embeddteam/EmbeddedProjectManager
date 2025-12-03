@@ -1,0 +1,32 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    # inputs:
+    #   version:
+    #     description: 'Version to release'
+    #     required: false
+    #     default: ''
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get version from package.json
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      # - name: Create Release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: v${{ env.VERSION }}
+      #     release_name: Release v${{ env.VERSION }}
+      #     draft: false
+      #     prerelease: false
