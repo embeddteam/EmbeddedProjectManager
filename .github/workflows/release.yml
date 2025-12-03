@@ -8,6 +8,9 @@ on:
     #     required: false
     #     default: ''
 
+env:
+  IS_PRERELEASE: 'false'
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -23,13 +26,34 @@ jobs:
 
       - name: Print version
         run: echo ${{ env.VERSION }}
-        
-      # - name: Create Release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: v${{ env.VERSION }}
-      #     release_name: Release v${{ env.VERSION }}
-      #     draft: false
-      #     prerelease: false
+
+      - name: Change prerelease status
+        if: contains(env.VERSION, '-rc')
+        run: echo "IS_PRERELEASE=true" >> $GITHUB_ENV
+      
+      - name: Print prerelease status
+        run: echo ${{ env.IS_PRERELEASE }}
+
+      - name: Read changelog for pre release build
+        id: changelog_release
+        uses: embedd-actions/read_changelog_action@v3
+        with:
+          changelogfile: 'CHANGELOG.md'
+          tag: ${{ env.VERSION }}
+
+      - name: Prepare release notes
+        run: |
+          echo "## [${{ needs.prepare.outputs.version}}] - $(date +'%Y-%m-%d')" >> Release_Notes.md 
+          echo "" >> Release_Notes.md
+          echo "## Изменения:" >> Release_Notes.md 
+          echo "${{ steps.changelog_release.outputs.content }}" >> Release_Notes.md
+
+
+      - uses: ncipollo/release-action@v1
+        with:
+          bodyFile: "Release_Notes.md"
+          allowUpdates: false
+          prerelease: ${{ env.IS_PRERELEASE }}
+          tag: ${{ env.VERSION }}
+          commit: ${{ github.ref_name }}
+
