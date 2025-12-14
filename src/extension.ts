@@ -120,9 +120,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const config = vscode.workspace.getConfiguration('EPMVSCodeExtension');
 
-		const isNeedTofindIocFiles = config.get<boolean>('CLT.findIocFiles', true);
+		const isNeedTofindIocFiles = config.get<boolean>('findIocFiles', true);
 
-		const isNeedToGenerateOpenOCD = config.get<boolean>('CLT.GenerateOpenOCD', false);
+		const isNeedToGenerateOpenOCD = config.get<boolean>('GenerateOpenOCD', false);
 
 		const workspaceFile = await InitWorkspace(workspaceRoot);
 

@@ -77,3 +77,8 @@ jobs:
           asset_name: ${{env.PACKAGE_NAME}}-${{ env.VERSION }}.vsix
           tag: ${{ env.VERSION }}
 
+      - name: Publish extension to marketplace
+        run: npm run deploy
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+

@@ -4,7 +4,7 @@
   "icon": "images/icon.png",
   "description": "Extension for managing embedded projects",
   "version": "0.0.1",
-  "publisher": "EmbeddTeam",
+  "publisher": "embeddteam",
   "repository": {
     "type": "git",
     "url": "https://github.com/embeddteam/EmbeddedProjectManager.git"
@@ -63,13 +63,13 @@
           "description": "Путь к набору инструментов командной строки",
           "scope": "window"
         },
-        "EPMVSCodeExtension.CLT.findIocFiles": {
+        "EPMVSCodeExtension.findIocFiles": {
           "type": "boolean",
           "default": true,
           "description": "Искать файлы .ioc в папках проекта",
           "scope": "window"
         },
-        "EPMVSCodeExtension.CLT.GenerateOpenOCD": {
+        "EPMVSCodeExtension.GenerateOpenOCD": {
           "type": "boolean",
           "default": false,
           "description": "Использовать OpenOCD для отладки проекта",
@@ -88,7 +88,8 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "vsix_package": "vsce package"
+    "vsix_package": "vsce package",
+    "deploy": "vsce publish"
   },
   "devDependencies": {
     "@types/vscode": "^1.106.1",
