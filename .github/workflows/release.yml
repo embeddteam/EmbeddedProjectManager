@@ -53,11 +53,13 @@ jobs:
           tag: ${{ env.VERSION }}
 
       - name: Prepare release notes
+        env:
+          REL_CHANGES: ${{ steps.changelog_release.outputs.content }}
         run: |
           echo "## [${{ env.VERSION }}] - $(date +'%Y-%m-%d')" >> Release_Notes.md 
           echo "" >> Release_Notes.md
           echo "## Изменения:" >> Release_Notes.md 
-          echo "${{ steps.changelog_release.outputs.content }}" >> Release_Notes.md
+          echo "$REL_CHANGES" >> Release_Notes.md
 
 
       - uses: ncipollo/release-action@v1
@@ -78,6 +80,7 @@ jobs:
           tag: ${{ env.VERSION }}
 
       - name: Publish extension to marketplace
+        if: env.IS_PRERELEASE == 'false'
         run: npm run deploy
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
