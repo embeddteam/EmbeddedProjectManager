@@ -4,8 +4,10 @@ on:
   workflow_dispatch:
 
 env:
+  VERSION: ''
   IS_PRERELEASE: 'false'
   PACKAGE_NAME: 'EmbeddedProjectManager'
+  VSIX_NAME: 'embeddedprojectmanager'
 
 jobs:
   release:
@@ -39,12 +41,6 @@ jobs:
       - name: Build extension
         run: vsce package
 
-      # - name: Rename extension
-      #   run: mv embeddedprojectmanager-${{ env.VERSION }}.vsix ${{ env.PACKAGE_NAME }}-${{ env.VERSION }}.vsix
-      
-
-
-
       - name: Read changelog for pre release build
         id: changelog_release
         uses: embedd-actions/read_changelog_action@v3
@@ -56,9 +52,8 @@ jobs:
         env:
           REL_CHANGES: ${{ steps.changelog_release.outputs.content }}
         run: |
-          echo "## [${{ env.VERSION }}] - $(date +'%Y-%m-%d')" >> Release_Notes.md 
+          echo "## [${{ env.VERSION }}] - $(date +'%Y-%m-%d')" >> Release_Notes.md
           echo "" >> Release_Notes.md
-          echo "## Изменения:" >> Release_Notes.md 
           echo "$REL_CHANGES" >> Release_Notes.md
 
 
@@ -67,7 +62,7 @@ jobs:
           bodyFile: "Release_Notes.md"
           allowUpdates: false
           prerelease: ${{ env.IS_PRERELEASE }}
-          tag: ${{ env.VERSION }}
+          tag: "v${{ env.VERSION }}"
           commit: ${{ github.ref_name }}
 
 
@@ -75,9 +70,9 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: embeddedprojectmanager-${{ env.VERSION }}.vsix
+          file: ${{ env.VSIX_NAME }}-${{ env.VERSION }}.vsix
           asset_name: ${{env.PACKAGE_NAME}}-${{ env.VERSION }}.vsix
-          tag: ${{ env.VERSION }}
+          tag: "v${{ env.VERSION }}"
 
       - name: Publish extension to marketplace
         if: env.IS_PRERELEASE == 'false'
