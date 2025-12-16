@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.3] – 2025‑12‑16
+
 ### Changed
 * Update name to embedd and adjust publisher.
 * The extension language has been changed to English.
