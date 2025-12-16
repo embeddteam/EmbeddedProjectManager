@@ -32,21 +32,21 @@ enum SettingsPlacementType {
 
 async function ChooseSettingsPlacement(): Promise<SettingsPlacementType> {
 
-	const item_workspace = 'Сохранить настройки в файл рабочей области';
-	const item_settings = 'Сохранить настройки в файл настроек проекта';
-	const item_cancel = 'Не создавать настройки';
+	const item_workspace = 'Save settings to workspace file';
+	const item_settings = 'Save settings to project settings file';
+	const item_cancel = 'Do not create settings';
 
 	const items: vscode.QuickPickItem[] = [
-		{ label: item_workspace, description: 'Сохранить настройки в файл .code-workspace' },
-		{ label: item_settings, description: 'Сохранить настройки в файл .vscode/settings.json' },
-		{ label: item_cancel, description: 'Не создавать настройки' }
+		{ label: item_workspace, description: 'Save settings to .code-workspace file' },
+		{ label: item_settings, description: 'Save settings to .vscode/settings.json file' },
+		{ label: item_cancel, description: 'Do not create settings' }
 	];
 
-	// Добавляем await для ожидания результата
+	// Add await to wait for the result
 	const selection = await vscode.window.showQuickPick(items, {
-		placeHolder: 'Выберите действие...',
-		title: 'Мои действия',
-		canPickMany: false // или true, если нужно мультиселект
+		placeHolder: 'Select action...',
+		title: 'Actions',
+		canPickMany: false // or true if multi-select is needed
 	});
 
 	if (selection) {
@@ -70,16 +70,16 @@ async function InitWorkspace(workspaceRoot: string): Promise<string | undefined>
 		return result_files[0];
 	}
 	else {
-		const confirm = 'Да';
+		const confirm = 'Yes';
 
-		const cancel = 'Нет';
+		const cancel = 'No';
 
 		const filename = `${path.basename(workspaceRoot)}.code-workspace`;
 
 		path.basename(workspaceRoot);
 
 		const selection = await vscode.window.showInformationMessage(
-			`Создать файл рабочей области ${filename}?`,
+			`Create workspace file ${filename}?`,
 			{ modal: true },
 			confirm,
 			cancel
@@ -105,9 +105,9 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 
-		// Проверяем, что есть открытая рабочая область
+		// Check if a workspace is open
 		if (!vscode.workspace.workspaceFolders) {
-			vscode.window.showErrorMessage('Рабочая папка не открыта. Откройте папку в VS Code.');
+			vscode.window.showErrorMessage('No workspace folder is open. Open a folder in VS Code.');
 			return;
 		}
 
@@ -162,14 +162,14 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}
 		else {
-			const confirm = 'Да';
+			const confirm = 'Yes';
 
-			const cancel = 'Нет';
+			const cancel = 'No';
 
 			path.basename(workspaceRoot);
 
 			const selection = await vscode.window.showInformationMessage(
-				`Создать файл настроек .vscode/settings.json?`,
+				`Create settings file .vscode/settings.json?`,
 				{ modal: true },
 				confirm,
 				cancel
@@ -224,11 +224,11 @@ export function activate(context: vscode.ExtensionContext) {
 		let gitIgnoreAddons: string[] = [];
 
 		if (fs.existsSync(path.join(workspaceRoot, '.vscode', 'settings.json')) && IsNeedToAddSettingsToGitignore) {
-			const confirm = 'Да';
-			const cancel = 'Нет';
+			const confirm = 'Yes';
+			const cancel = 'No';
 
 			const result = await vscode.window.showInformationMessage(
-				`Добавить файл .vscode/settings.json в .gitignore?`,
+				`Add .vscode/settings.json to .gitignore?`,
 				{ modal: true },
 				confirm,
 				cancel
@@ -247,20 +247,20 @@ export function activate(context: vscode.ExtensionContext) {
 		if (workspaceFile) {
 			const workspaceUri = vscode.Uri.file(path.join(workspaceRoot, workspaceFile));
 
-			const OpenCurrent = 'Открыть в текущем окне';
-			const OpenNew = 'Открыть в новом окне'; 
-			// Предложение открыть рабочую область
+			const OpenCurrent = 'Open in current window';
+			const OpenNew = 'Open in new window'; 
+			// Offer to open workspace
 			vscode.window.showInformationMessage(
-				'Рабочая область создана. Открыть её?',
+				'Workspace created. Open it?',
 				OpenCurrent,
 				OpenNew
 			).then(selection => {
 				if (selection === OpenCurrent) {
-					// true — открыть в текущем окне (перезагрузит окно)
+					// true — open in current window (will reload window)
 					vscode.commands.executeCommand('vscode.openFolder', workspaceUri, false);
 				}
 				if (selection === OpenNew) {
-					// false — открыть в новом окне (не перезагружать окно)
+					// false — open in new window (don't reload window)
 					vscode.commands.executeCommand('vscode.openFolder', workspaceUri, true);
 				}
 			});
@@ -271,10 +271,10 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(init_project);
 
 
-	// Регистрируем TreeDataProvider
+	// Register TreeDataProvider
 	const treeDataProvider = new MyTreeDataProvider(context);
 
-	// Регистрируем TreeView
+	// Register TreeView
 	const treeView = vscode.window.createTreeView('epmTreeView', {
 		treeDataProvider,
 		showCollapseAll: true
@@ -288,7 +288,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() { }
 
 
-// Пример простого TreeDataProvider
+// Simple TreeDataProvider implementation
 class MyTreeDataProvider implements vscode.TreeDataProvider<ActionTreeNode> {
 
 	constructor(private context: vscode.ExtensionContext) { }
@@ -299,12 +299,12 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<ActionTreeNode> {
 
 	getChildren(element?: ActionTreeNode): Thenable<ActionTreeNode[]> {
 		if (!element) {
-			// Корневые элементы
+			// Root elements
 			return Promise.resolve([
 				new ActionTreeNode('Init current project', vscode.TreeItemCollapsibleState.None, this.context, true),
 			]);
 		} else {
-			// Дочерние элементы (если collapsible)
+			// Child elements (if collapsible)
 			return Promise.resolve([
 
 			]);

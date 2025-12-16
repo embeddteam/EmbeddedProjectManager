@@ -70,7 +70,7 @@ export function CreateLaunchContent(devices: string[], isStm32Device: boolean, i
                 configurations.push(stlinkConfig);
 
 
-                // Добавить поддержку OpenOCD при необходимости
+                // Add OpenOCD support if needed
                 if (isGenerateOpenOcd) {
                     const OpenOCDConfig: LaunchItem = {
                         "name": `Cortex Debug for ${device} (OpenOCD)`,
@@ -129,7 +129,7 @@ export function CreateLaunchContent(devices: string[], isStm32Device: boolean, i
         configurations.push(stlinkConfig);
 
 
-        // Добавить поддержку OpenOCD при необходимости
+        // Add OpenOCD support if needed
         if (isGenerateOpenOcd) {
             const OpenOCDConfig: LaunchItem = {
                 "name": `Cortex Debug (OpenOCD)`,

@@ -1,37 +1,38 @@
 # Embedded Project Manager
 
-Расширение VS Code для управления встраиваемыми проектами. Упрощает настройку и разработку проектов для микроконтроллеров.
+VS Code extension for managing embedded projects. Simplifies setup and development of microcontroller projects.
 
-- Автоматическая настройка проекта для микроконтроллеров STM32
-- Генерация конфигурационных файлов отладки (launch.json)
-- Генерация задач сборки (tasks.json)
-- Настройка параметров C/C++ (c_cpp_properties.json)
-- Интеграция с CubeMX для проектов STM32
-- Поддержка OpenOCD для отладки
-- Управление через боковую панель VS Code
-## Основные возможности
+- Automatic project setup for STM32 microcontrollers
+- Debug configuration file generation (launch.json)
+- Build tasks generation (tasks.json)
+- C/C++ settings configuration (c_cpp_properties.json)
+- CubeMX integration for STM32 projects
+- OpenOCD support for debugging
+- Management via VS Code sidebar
 
-## Установка
-Установка расширения просиходит через vsix файл.
+## Key Features
 
-## Использование
+## Installation
+The extension is installed via a vsix file.
 
-## Настройки
-1. Откройте папку проекта в VS Code
-2. Откройте боковую панель "Embedded Project Manager"
-3. Нажмите "Init current project" или используйте команду `Ctrl+Shift+P` и выберите "Embedded Project Manager: Init project"
-4. Следуйте инструкциям в появившихся диалогах для настройки проекта
+## Usage
 
-Расширение предоставляет следующие настройки:
+## Settings
+1. Open the project folder in VS Code
+2. Open the "Embedd Project Manager" sidebar
+3. Click "Init current project" or use the command `Ctrl+Shift+P` and select "Embedd Project Manager: Init project"
+4. Follow the instructions in the dialogs to configure the project
 
-- `EPMVSCodeExtension.CLT.path` - Путь к набору инструментов командной строки
-- `EPMVSCodeExtension.CLT.findIocFiles` - Искать файлы .ioc в папках проекта (по умолчанию true)
-- `EPMVSCodeExtension.CLT.GenerateOpenOCD` - Использовать OpenOCD для отладки проекта (по умолчанию false)
+The extension provides the following settings:
 
-## Требования
-- VS Code версии 1.106.1 или выше
-- Для проектов STM32: установленный STM32CubeMX
-- Для отладки: OpenOCD (опционально)
+- `EPMVSCodeExtension.CLT.path` - Path to the command line tools
+- `EPMVSCodeExtension.CLT.findIocFiles` - Search for .ioc files in project folders (default true)
+- `EPMVSCodeExtension.CLT.GenerateOpenOCD` - Use OpenOCD for project debugging (default false)
 
-## Лицензия
-Расширение распространяется под лицензией MIT. Подробности в файле [LICENSE](LICENSE).
+## Requirements
+- VS Code version 1.106.1 or higher
+- For STM32 projects: STM32CubeMX installed
+- For debugging: OpenOCD (optional)
+
+## License
+The extension is distributed under the MIT license. See [LICENSE](LICENSE) for details.

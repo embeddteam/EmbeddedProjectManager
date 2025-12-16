@@ -53,19 +53,19 @@
         "EPMVSCodeExtension.CLT.path": {
           "type": "string",
           "default": "",
-          "description": "Путь к набору инструментов командной строки",
+          "description": "Path to the command line tools",
           "scope": "window"
         },
         "EPMVSCodeExtension.findIocFiles": {
           "type": "boolean",
           "default": true,
-          "description": "Искать файлы .ioc в папках проекта",
+          "description": "Search for .ioc files in project folders",
           "scope": "window"
         },
         "EPMVSCodeExtension.GenerateOpenOCD": {
           "type": "boolean",
           "default": false,
-          "description": "Использовать OpenOCD для отладки проекта",
+          "description": "Use OpenOCD for project debugging",
           "scope": "window"
         }
       }

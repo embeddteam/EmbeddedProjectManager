@@ -4,26 +4,26 @@ import * as fs from 'fs';
 
 import * as path from 'path';
 
-// Функция для записи JSON в файл (перезаписывает, если файл существует)
+// Function to write JSON to file (overwrites if file exists)
 export async function writeJsonFileSync(filePath: string, data: any): Promise<boolean> {
     try {
-        const jsonContent = JSON.stringify(data, null, 2); // с отступами для читаемости
+        const jsonContent = JSON.stringify(data, null, 2); // with indentation for readability
         if (!fs.existsSync(filePath)) {
             if (!fs.existsSync(path.dirname(filePath))) {
                 fs.mkdirSync(path.dirname(filePath), { recursive: true });
             }
 
             fs.writeFileSync(filePath, jsonContent, 'utf8');
-            vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
-            console.log(`✅ Файл успешно записан: ${filePath}`);
+            vscode.window.showInformationMessage(`File created: ${filePath}`);
+            console.log(`✅ File successfully written: ${filePath}`);
             return true;
         }
         else {
-            const confirm = 'Да';
-            const cancel = 'Нет';
+            const confirm = 'Yes';
+            const cancel = 'No';
 
             const result = await vscode.window.showWarningMessage(
-                `Файл ${path.basename(filePath)}  уже существуют. Перезаписать?`,
+                `File ${path.basename(filePath)} already exists. Overwrite?`,
                 { modal: true },
                 confirm,
                 cancel
@@ -33,7 +33,7 @@ export async function writeJsonFileSync(filePath: string, data: any): Promise<bo
             console.log(result);
             if (result === confirm) {
                 fs.writeFileSync(filePath, jsonContent, 'utf8');
-                vscode.window.showInformationMessage(`Файл создан: ${filePath}`);
+                vscode.window.showInformationMessage(`File created: ${filePath}`);
                 return true;
             }
             else if (result === cancel) {
@@ -43,7 +43,7 @@ export async function writeJsonFileSync(filePath: string, data: any): Promise<bo
         }
 
     } catch (error) {
-        console.error('❌ Ошибка записи файла:', error);
+        console.error('❌ Error writing file:', error);
         return false;
     }
 

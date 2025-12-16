@@ -13,7 +13,7 @@ export function findFiles(dir: string, ext: string): string[] {
       const stat = fs.statSync(fullPath);
 
       if (stat.isDirectory()) {
-        walk(fullPath); // рекурсия
+        walk(fullPath); // recursion
       } else if (path.extname(item) === ext) {
         const relativePath = path.relative(dir, fullPath);
         results.push(relativePath);

@@ -137,13 +137,13 @@ export function CreateTasksContent(workspaceFolder: string, isNeedAddCubeMx: boo
         for (const item of iocFiles) {
             const cube_mx_task: TaskItem = {
                 type: "shell",
-                label: `Открыть STM32CubeMX для проекта ${path.basename(item)}`,
+                label: `Open STM32CubeMX for ${path.basename(item)}`,
                 command: "start",
                 args: [
                     `${item.replace('\\', '/')}`
                 ],
                 problemMatcher: [],
-                detail: "Открыть STM32CubeMX для проекта",
+                detail: "Open STM32CubeMX for project",
                 icon: {
                     id: "chip",
                     color: "terminal.ansiBlue"
