@@ -101,7 +101,7 @@ async function InitWorkspace(workspaceRoot: string): Promise<string | undefined>
 export function activate(context: vscode.ExtensionContext) {
 
 
-	const init_project = vscode.commands.registerCommand('embeddedprojectmanager.init_project', async () => {
+	const init_project = vscode.commands.registerCommand('embedd-project-manager.init_project', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
 
@@ -334,7 +334,7 @@ class ActionTreeNode extends vscode.TreeItem {
 
 		if (isEnabled) {
 			this.command = {
-				command: 'embeddedprojectmanager.init_project',
+				command: 'embedd-project-manager.init_project',
 				title: '',
 				arguments: [this.label]
 			};

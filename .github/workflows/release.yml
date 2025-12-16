@@ -6,8 +6,8 @@ on:
 env:
   VERSION: ''
   IS_PRERELEASE: 'false'
-  PACKAGE_NAME: 'EmbeddedProjectManager'
-  VSIX_NAME: 'embeddedprojectmanager'
+  PACKAGE_NAME: 'EmbeddProjectManager'
+  VSIX_NAME: 'embedd-project-manager'
 
 jobs:
   release:

@@ -1,10 +1,10 @@
 {
-  "name": "embeddedprojectmanager",
-  "displayName": "Embedded Project Manager",
+  "name": "embedd-project-manager",
+  "displayName": "Embedd Project Manager",
   "icon": "images/icon.png",
   "description": "Extension for managing embedded projects",
   "version": "0.0.2",
-  "publisher": "embeddteam",
+  "publisher": "embedd-team",
   "repository": {
     "type": "git",
     "url": "https://github.com/embeddteam/EmbeddedProjectManager.git"
@@ -16,23 +16,23 @@
     "Other"
   ],
   "extensionDependencies": [
-    "embeddteam.embedded-cortex-debug",
-    "embeddteam.embedded-build-analyzer"
+    "embedd-team.embedd-cortex-debug",
+    "embedd-team.embedd-build-analyzer"
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "embeddedprojectmanager.init_project",
-        "title": "Embedded Project Manager: Init project"
+        "command": "embedd-project-manager.init_project",
+        "title": "Embedd Project Manager: Init project"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "epmSidebar",
-          "title": "Embedded Project Manager",
+          "title": "Embedd Project Manager",
           "icon": "$(chip)"
         }
       ]
@@ -48,7 +48,7 @@
       ]
     },
     "configuration": {
-      "title": "Embedded Project Manager",
+      "title": "Embedd Project Manager",
       "properties": {
         "EPMVSCodeExtension.CLT.path": {
           "type": "string",

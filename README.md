@@ -1,4 +1,4 @@
-# Embedded Project Manager
+# Embedd Project Manager
 
 VS Code extension for managing embedded projects. Simplifies setup and development of microcontroller projects.
 
