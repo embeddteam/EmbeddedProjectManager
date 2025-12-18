@@ -1,5 +1,10 @@
 # Embedd Project Manager
 
+[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/embedd-team.embedd-project-manager.svg)](https://marketplace.visualstudio.com/items?itemName=embedd-team.embedd-project-manager)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Open VSX](https://img.shields.io/badge/Open%20VSX-Published-green)](https://open-vsx.org/extension/embedd-team/embedd-project-manager)
+[![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blue?logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=embedd-team.embedd-project-manager)
+
 VS Code extension for managing embedded projects. Simplifies setup and development of microcontroller projects.
 
 - Automatic project setup for STM32 microcontrollers
