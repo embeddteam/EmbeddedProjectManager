@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as https from 'https';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 const GITHUB_OWNER = 'embeddteam';
 const GITHUB_REPO = 'EmbeddedProjectManager';
@@ -173,7 +174,7 @@ async function downloadAndInstall(downloadUrl: string, version: string): Promise
             cancellable: false
         },
         async () => {
-            const tmpDir = require('os').tmpdir();
+            const tmpDir = os.tmpdir();
             const vsixPath = path.join(tmpDir, `${VSIX_PREFIX}${version}.vsix`);
 
             try {
