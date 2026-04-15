@@ -7,6 +7,9 @@ import * as os from 'os';
 const GITHUB_OWNER = 'embeddteam';
 const GITHUB_REPO = 'EmbeddedProjectManager';
 const VSIX_PREFIX = 'embedd-project-manager-';
+const EXTENSION_ID = 'embedd-team.embedd-project-manager';
+const EXTENSION_DISPLAY_NAME = 'Embedd Project Manager';
+const CONFIG_SECTION = 'EPMVSCodeExtension';
 
 interface GitHubRelease {
     tag_name: string;
@@ -119,7 +122,7 @@ async function getLatestRelease(): Promise<{ version: string; downloadUrl: strin
 }
 
 function getCurrentVersion(): string {
-    const ext = vscode.extensions.getExtension('embedd-team.embedd-project-manager');
+    const ext = vscode.extensions.getExtension(EXTENSION_ID);
     return ext?.packageJSON?.version ?? '0.0.0';
 }
 
@@ -128,7 +131,7 @@ export async function checkForUpdates(silent: boolean): Promise<void> {
         const latest = await getLatestRelease();
         if (!latest) {
             if (!silent) {
-                vscode.window.showInformationMessage('Embedd Project Manager: no releases found.');
+                vscode.window.showInformationMessage(`${EXTENSION_DISPLAY_NAME}: no releases found.`);
             }
             return;
         }
@@ -140,7 +143,7 @@ export async function checkForUpdates(silent: boolean): Promise<void> {
         if (compareVersions(latestParsed, currentParsed) <= 0) {
             if (!silent) {
                 vscode.window.showInformationMessage(
-                    `Embedd Project Manager: you are using the latest version (${currentVersion}).`
+                    `${EXTENSION_DISPLAY_NAME}: you are using the latest version (${currentVersion}).`
                 );
             }
             return;
@@ -149,7 +152,7 @@ export async function checkForUpdates(silent: boolean): Promise<void> {
         const install = 'Install';
         const dismiss = 'Dismiss';
         const selection = await vscode.window.showInformationMessage(
-            `Embedd Project Manager: new version ${latest.version} is available (current: ${currentVersion}).`,
+            `${EXTENSION_DISPLAY_NAME}: new version ${latest.version} is available (current: ${currentVersion}).`,
             install,
             dismiss
         );
@@ -160,7 +163,7 @@ export async function checkForUpdates(silent: boolean): Promise<void> {
     } catch (err: any) {
         if (!silent) {
             vscode.window.showErrorMessage(
-                `Embedd Project Manager: update check failed — ${err.message}`
+                `${EXTENSION_DISPLAY_NAME}: update check failed — ${err.message}`
             );
         }
     }
@@ -170,7 +173,7 @@ async function downloadAndInstall(downloadUrl: string, version: string): Promise
     await vscode.window.withProgress(
         {
             location: vscode.ProgressLocation.Notification,
-            title: `Embedd Project Manager: downloading v${version}...`,
+            title: `${EXTENSION_DISPLAY_NAME}: downloading v${version}...`,
             cancellable: false
         },
         async () => {
@@ -186,7 +189,7 @@ async function downloadAndInstall(downloadUrl: string, version: string): Promise
 
                 const reload = 'Reload';
                 const result = await vscode.window.showInformationMessage(
-                    `Embedd Project Manager v${version} installed. Reload to activate.`,
+                    `${EXTENSION_DISPLAY_NAME} v${version} installed. Reload to activate.`,
                     reload
                 );
                 if (result === reload) {
@@ -200,7 +203,7 @@ async function downloadAndInstall(downloadUrl: string, version: string): Promise
 }
 
 export function scheduleAutoUpdateCheck(context: vscode.ExtensionContext): void {
-    const config = vscode.workspace.getConfiguration('EPMVSCodeExtension');
+    const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
     const autoUpdate = config.get<boolean>('autoCheckUpdates', true);
 
     if (autoUpdate) {
