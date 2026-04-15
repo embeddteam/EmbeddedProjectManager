@@ -18,11 +18,13 @@ VS Code extension for managing embedded projects. Simplifies setup and developme
 ## Key Features
 
 ## Installation
+
 The extension is installed via a vsix file.
 
 ## Usage
 
 ## Settings
+
 1. Open the project folder in VS Code
 2. Open the "Embedd Project Manager" sidebar
 3. Click "Init current project" or use the command `Ctrl+Shift+P` and select "Embedd Project Manager: Init project"
@@ -35,9 +37,11 @@ The extension provides the following settings:
 - `EPMVSCodeExtension.CLT.GenerateOpenOCD` - Use OpenOCD for project debugging (default false)
 
 ## Requirements
+
 - VS Code version 1.106.1 or higher
 - For STM32 projects: STM32CubeMX installed
 - For debugging: OpenOCD (optional)
 
 ## License
+
 The extension is distributed under the MIT license. See [LICENSE](LICENSE) for details.
