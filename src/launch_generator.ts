@@ -34,8 +34,8 @@ export function CreateLaunchContent(devices: string[], isStm32Device: boolean, i
     if (isStm32Device) {
         if (devices.length > 0) {
             for (const device of devices) {
-                // Парсим базовую часть: STM32 + серия (например, F429, H743, L476)
-                // Поддерживаем шаблоны: STM32F429, STM32H743V, STM32MP157 (11 символов)
+                // Parse the base part: STM32 + series (e.g. F429, H743, L476)
+                // Supported patterns: STM32F429, STM32H743V, STM32MP157 (up to 11 chars)
                 const svd_name = device.match(
                     /^(STM32(?:MP\d{3}|WL\d{2}|[A-Z]\d{2,4}))/i
                 );

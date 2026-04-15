@@ -117,7 +117,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         let STM32_Devices: string[] = [];
 
-        // Берём корень первой рабочей папки
+        // Get the root of the first workspace folder
         const workspaceRoot = vscode.workspace.workspaceFolders[0].uri.fsPath;
 
         const config = vscode.workspace.getConfiguration('EPMVSCodeExtension');
@@ -356,7 +356,7 @@ class ActionTreeNode extends vscode.TreeItem {
             this.command = undefined;
         }
 
-        // Иконки из коллекции VS Code
+        // Icons from the VS Code built-in collection
         this.iconPath = new vscode.ThemeIcon('symbol-property');
     }
 }

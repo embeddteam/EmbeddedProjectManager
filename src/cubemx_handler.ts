@@ -31,7 +31,7 @@ export function extractSTM32BaseDeviceIdFromFile(filePath: string): string | nul
     try {
         const content = fs.readFileSync(filePath, 'utf-8');
 
-        // Ищем строку вида "ProjectManager.DeviceId=..."
+        // Look for a line like "ProjectManager.DeviceId=..."
         const match = content.match(/^ProjectManager\.DeviceId\s*=\s*(\S+)/m);
         if (!match) {
             console.warn(`⚠️  ProjectManager.DeviceId not found in ${filePath}`);
@@ -46,7 +46,7 @@ export function extractSTM32BaseDeviceIdFromFile(filePath: string): string | nul
 
         return fullDeviceId;
 
-        // fallback: если формат не STM32 — возвращаем как есть (или можно вернуть null)
+        // Fallback: if the format is not STM32, return as-is (or could return null)
         console.warn(`❓ Unexpected DeviceId format: "${fullDeviceId}"`);
         return fullDeviceId;
     } catch (err: any) {
