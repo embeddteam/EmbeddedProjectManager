@@ -23,5 +23,8 @@ export default [{
         eqeqeq: "warn",
         "no-throw-literal": "warn",
         semi: "warn",
+        indent: ["warn", 4, { SwitchCase: 1 }],
+        "no-mixed-spaces-and-tabs": "error",
+        "no-tabs": "error",
     },
 }];
