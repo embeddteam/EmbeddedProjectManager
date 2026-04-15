@@ -22,6 +22,8 @@ import { CreateCppPropertiesContent } from './cpp_prop_generator';
 
 import { CreateGitignoreContent } from './gitignore_generator';
 
+import { checkForUpdates, scheduleAutoUpdateCheck } from './updater';
+
 
 enum SettingsPlacementType {
 	Workspace = 'workspace',
@@ -270,6 +272,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(init_project);
 
+	// Register check for updates command
+	const checkUpdatesCmd = vscode.commands.registerCommand(
+		'embedd-project-manager.check_updates',
+		() => checkForUpdates(false)
+	);
+	context.subscriptions.push(checkUpdatesCmd);
+
+	// Schedule automatic update check on startup
+	scheduleAutoUpdateCheck(context);
 
 	// Register TreeDataProvider
 	const treeDataProvider = new MyTreeDataProvider(context);
@@ -301,7 +312,8 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<ActionTreeNode> {
 		if (!element) {
 			// Root elements
 			return Promise.resolve([
-				new ActionTreeNode('Init current project', vscode.TreeItemCollapsibleState.None, this.context, true),
+				new ActionTreeNode('Init current project', vscode.TreeItemCollapsibleState.None, this.context, true, 'embedd-project-manager.init_project'),
+				new ActionTreeNode('Check for updates', vscode.TreeItemCollapsibleState.None, this.context, true, 'embedd-project-manager.check_updates'),
 			]);
 		} else {
 			// Child elements (if collapsible)
@@ -317,7 +329,8 @@ class ActionTreeNode extends vscode.TreeItem {
 		public readonly label_text: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
 		context: vscode.ExtensionContext,
-		isEnabled: boolean
+		isEnabled: boolean,
+		commandId?: string
 	) {
 		let descriptionText: string = '';
 
@@ -334,7 +347,7 @@ class ActionTreeNode extends vscode.TreeItem {
 
 		if (isEnabled) {
 			this.command = {
-				command: 'embedd-project-manager.init_project',
+				command: commandId ?? 'embedd-project-manager.init_project',
 				title: '',
 				arguments: [this.label]
 			};

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.4] – 2026‑04‑15
+
+### Changed
+* Add automatically updating extension from GitHub API.
+
 ## [0.0.3] – 2025‑12‑16
 
 ### Changed

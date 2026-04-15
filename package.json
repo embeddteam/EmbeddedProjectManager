@@ -3,7 +3,7 @@
   "displayName": "Embedd Project Manager",
   "icon": "images/icon.png",
   "description": "Extension for managing embedded projects",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "embedd-team",
   "repository": {
     "type": "git",
@@ -26,8 +26,22 @@
       {
         "command": "embedd-project-manager.init_project",
         "title": "Embedd Project Manager: Init project"
+      },
+      {
+        "command": "embedd-project-manager.check_updates",
+        "title": "Embedd Project Manager: Check for updates",
+        "icon": "$(cloud-download)"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "embedd-project-manager.check_updates",
+          "when": "view == epmTreeView",
+          "group": "navigation"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -67,6 +81,12 @@
           "default": false,
           "description": "Use OpenOCD for project debugging",
           "scope": "window"
+        },
+        "EPMVSCodeExtension.autoCheckUpdates": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically check for extension updates on startup",
+          "scope": "application"
         }
       }
     }
