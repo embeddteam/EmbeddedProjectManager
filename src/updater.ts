@@ -123,7 +123,7 @@ async function getLatestRelease(): Promise<{ version: string; downloadUrl: strin
 
 function getCurrentVersion(): string {
     const ext = vscode.extensions.getExtension(EXTENSION_ID);
-    return ext?.packageJSON?.version ?? '0.0.0';
+    return (ext?.packageJSON?.version as string) ?? '0.0.0';
 }
 
 export async function checkForUpdates(silent: boolean): Promise<void> {
