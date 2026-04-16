@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.0.6] – 2026‑04‑16
+
 ### Changed
 * Changed extension icon.
 
