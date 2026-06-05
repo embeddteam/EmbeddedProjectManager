@@ -38,7 +38,7 @@ The extension provides the following settings:
 
 ## Requirements
 
-- VS Code version 1.106.1 or higher
+- VS Code version 1.105.0 or higher
 - For STM32 projects: STM32CubeMX installed
 - For debugging: OpenOCD (optional)
 

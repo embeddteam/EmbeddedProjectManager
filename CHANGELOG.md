@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.0.7] – 2026‑06‑05
+
+### Changed
+* Lowered minimum VS Code engine requirement to 1.105.0 for Cursor compatibility.
+
 ## [0.0.6] – 2026‑04‑16
 
 ### Changed
