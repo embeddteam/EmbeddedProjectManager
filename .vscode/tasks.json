@@ -5,6 +5,7 @@
 	"tasks": [
 		{
 			"type": "npm",
+			"label": "tasks: watch",
 			"script": "watch",
 			"problemMatcher": "$ts-webpack-watch",
 			"isBackground": true,
@@ -19,6 +20,7 @@
 		},
 		{
 			"type": "npm",
+			"label": "tasks: watch-tests-tsc",
 			"script": "watch-tests",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
@@ -31,27 +33,27 @@
 		{
 			"label": "tasks: watch-tests",
 			"dependsOn": [
-				"npm: watch",
-				"npm: watch-tests"
+				"tasks: watch",
+				"tasks: watch-tests-tsc"
 			],
 			"problemMatcher": []
 		},
 		{
 			"type": "shell",
-			"label": "Установить зависимости",
+			"label": "tasks: install dependencies",
 			"command": "npm",
 			"args": [
 				"install"
 			],
 			"problemMatcher": [],
-			"detail": "Установка зависимостей"
+			"detail": "Install npm dependencies"
 		},
 		{
 			"type": "npm",
-			"label": "Создать пакет расширения",
+			"label": "tasks: package extension",
 			"script": "vsix_package",
 			"problemMatcher": [],
-			"detail": "Создать пакет расширения"
+			"detail": "Create extension VSIX package"
 		}
 	]
 }
