@@ -43,7 +43,7 @@ jobs:
         with:
           name: vsix-package
           path: ./*.vsix
-          retention-days: 7
+          retention-days: 1
 
   release:
     name: Create GitHub Release
